@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Favicon Generator</title>
+    <style>
+        body { margin: 0; padding: 20px; background: #f0f0f0; }
+        .favicon-container {
+            width: 32px;
+            height: 32px;
+            background: transparent;
+            margin: 20px 0;
+        }
+        .favicon-large {
+            width: 180px;
+            height: 180px;
+            background: transparent;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h2>32x32 Favicon</h2>
+    <div class="favicon-container">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+            <!-- Outer segmented ring -->
+            <circle
+                cx="50"
+                cy="50"
+                r="45"
+                stroke="#ffffff"
+                stroke-width="10"
+                stroke-dasharray="10 4.11"
+                transform="rotate(15 50 50)"
+            />
+            <!-- Inner circle for framing -->
+            <circle cx="50" cy="50" r="34" fill="#1f2937" />
+            <!-- Inner double rings -->
+            <circle cx="50" cy="50" r="32" stroke="#ffffff" stroke-width="2.5" />
+            <circle cx="50" cy="50" r="27" stroke="#ffffff" stroke-width="1.5" />
+            <!-- "AI" Text -->
+            <text
+                x="50"
+                y="50"
+                font-family="Inter, sans-serif"
+                font-size="28"
+                font-weight="600"
+                fill="#ffffff"
+                text-anchor="middle"
+                dy="0.35em"
+            >
+                AI
+            </text>
+        </svg>
+    </div>
+
+    <h2>180x180 Apple Touch Icon</h2>
+    <div class="favicon-large">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="180" height="180">
+            <!-- Outer segmented ring -->
+            <circle
+                cx="50"
+                cy="50"
+                r="45"
+                stroke="#ffffff"
+                stroke-width="10"
+                stroke-dasharray="10 4.11"
+                transform="rotate(15 50 50)"
+            />
+            <!-- Inner circle for framing -->
+            <circle cx="50" cy="50" r="34" fill="#1f2937" />
+            <!-- Inner double rings -->
+            <circle cx="50" cy="50" r="32" stroke="#ffffff" stroke-width="2.5" />
+            <circle cx="50" cy="50" r="27" stroke="#ffffff" stroke-width="1.5" />
+            <!-- "AI" Text -->
+            <text
+                x="50"
+                y="50"
+                font-family="Inter, sans-serif"
+                font-size="28"
+                font-weight="600"
+                fill="#ffffff"
+                text-anchor="middle"
+                dy="0.35em"
+            >
+                AI
+            </text>
+        </svg>
+    </div>
+
+    <p>Right-click on the icons above and "Save image as..." to save as PNG files for favicon.ico and apple-touch-icon.png</p>
+</body>
+</html>

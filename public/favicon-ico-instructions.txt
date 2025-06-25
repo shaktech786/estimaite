@@ -1,0 +1,3 @@
+<!-- This is a placeholder for favicon.ico - you'll need to convert the SVG to ICO format -->
+<!-- Use an online converter or a tool like ImageMagick to convert favicon.svg to favicon.ico -->
+<!-- Command: magick favicon.svg -resize 32x32 favicon.ico -->
