@@ -8,11 +8,9 @@ const nextConfig: NextConfig = {
   // Server external packages (moved from experimental)
   serverExternalPackages: ['socket.io'],
 
-  // Experimental features for Node.js 23
+  // Experimental features
   experimental: {
-    optimizeCss: true,
     optimizeServerReact: true,
-    useLightningcss: true,
     optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-select'],
   },
 
