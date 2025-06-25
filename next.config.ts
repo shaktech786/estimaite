@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 
   // Server external packages (moved from experimental)
-  serverExternalPackages: ['socket.io'],
+  serverExternalPackages: ['pusher'],
 
   // Experimental features
   experimental: {
@@ -58,7 +58,7 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // WebSocket support for Socket.io
+  // WebSocket support for Pusher
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {

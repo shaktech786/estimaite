@@ -18,9 +18,10 @@ export function ParticipantList({
 }: ParticipantListProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+      <h3 className="text-base lg:text-lg font-semibold text-white flex items-center gap-2">
         <User className="h-4 w-4" />
-        Participants ({participants.length})
+        <span className="hidden sm:inline">Participants ({participants.length})</span>
+        <span className="sm:hidden">({participants.length})</span>
       </h3>
 
       <div className="space-y-2">
@@ -40,9 +41,9 @@ export function ParticipantList({
                 'hover:bg-opacity-80'
               )}
             >
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-3 min-w-0 flex-1">
                 <div className={cn(
-                  'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium',
+                  'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0',
                   isCurrentUser
                     ? 'bg-blue-500 text-white'
                     : 'bg-gray-600 text-gray-200'
@@ -50,37 +51,37 @@ export function ParticipantList({
                   {participant.name.charAt(0).toUpperCase()}
                 </div>
 
-                <div className="flex flex-col">
+                <div className="flex flex-col min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className={cn(
-                      'font-medium text-sm',
+                      'font-medium text-sm truncate',
                       isCurrentUser ? 'text-white' : 'text-gray-300'
                     )}>
                       {participant.name}
                     </span>
 
                     {isModerator && (
-                      <div title="Moderator">
+                      <div title="Moderator" className="flex-shrink-0">
                         <Crown className="h-3 w-3 text-yellow-400" />
                       </div>
                     )}
 
                     {isCurrentUser && (
-                      <span className="text-xs bg-blue-900/30 text-blue-300 px-2 py-0.5 rounded-full">
+                      <span className="text-xs bg-blue-900/30 text-blue-300 px-2 py-0.5 rounded-full flex-shrink-0">
                         You
                       </span>
                     )}
                   </div>
 
                   {revealed && hasEstimate && (
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-400 truncate">
                       Estimate: {participant.estimate}
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 flex-shrink-0">
                 {!revealed && (
                   <div className={cn(
                     'flex items-center gap-1 text-xs',

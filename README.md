@@ -33,7 +33,7 @@ A modern, AI-powered planning poker application built with Next.js 15 for agile 
 - **Framework**: Next.js 15 with App Router
 - **Language**: TypeScript for type safety
 - **Styling**: Tailwind CSS with custom components
-- **Real-time**: Socket.io for WebSocket communication
+- **Real-time**: Pusher for WebSocket communication
 - **AI Integration**: OpenAI API for story analysis
 - **Icons**: Lucide React for consistent iconography
 - **Animations**: Framer Motion for smooth interactions
@@ -55,11 +55,11 @@ src/
 │   ├── ParticipantList.tsx              # Participants
 │   └── StoryForm.tsx                    # Story form
 ├── hooks/
-│   └── useSocket.ts                     # Socket hook
+│   └── usePusher.ts                     # Pusher hook
 ├── lib/
 │   └── utils.ts                         # Utilities
 ├── pages/api/
-│   └── socket.ts                        # Socket.io server
+│   └── pusher/                          # Pusher API routes
 └── types/
     └── index.ts                         # Type definitions
 ```
@@ -77,7 +77,7 @@ src/
 - Use `npm run dev` for development server
 - Follow the established component structure in `/src/components/`
 - All API routes are in `/src/app/api/` using Next.js App Router
-- Socket.io server is set up in `/src/pages/api/socket.ts` for compatibility
+- Pusher is configured for real-time communication
 
 
 ### Prerequisites
@@ -154,7 +154,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Next.js team for the amazing framework
 - OpenAI for AI capabilities
 - Tailwind CSS for the beautiful styling system
-- Socket.io for real-time communication
+- Pusher for real-time communication
 - The agile community for inspiration
 
 ## 🔮 Roadmap
@@ -164,6 +164,30 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Enhanced accessibility features
 - [ ] Performance optimizations
 - [ ] Extended customization options
+
+## 🔐 Security Notice
+
+**IMPORTANT**: This repository uses secure credential management practices:
+
+### For Local Development:
+1. Copy `.env.local.example` to `.env.local`
+2. Replace placeholder values with your actual credentials
+3. Use the private setup script: `./setup-env-private.sh` (if provided)
+4. Never commit `.env.local` or any files containing real credentials
+
+### For Production Deployment:
+1. Use `.env.production` as reference for actual values
+2. Set all environment variables in Vercel dashboard
+3. Verify all sensitive files are gitignored
+4. Follow the security checklist in `SECURITY_AUDIT.md`
+
+### Security Features:
+- ✅ No persistent data storage
+- ✅ Automatic session cleanup
+- ✅ Input validation and sanitization  
+- ✅ Rate limiting on API endpoints
+- ✅ Secure environment variable handling
+- ✅ Privacy-first design (no user tracking)
 
 ---
 

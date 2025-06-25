@@ -87,7 +87,7 @@ export function StoryForm({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="As a user, I want to..."
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+          className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors min-h-[44px]"
           required
           disabled={disabled}
         />
@@ -104,7 +104,7 @@ export function StoryForm({
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Describe the feature in detail..."
           rows={4}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors resize-none"
+          className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
           required
           disabled={disabled}
         />
@@ -112,7 +112,7 @@ export function StoryForm({
 
       {/* Acceptance Criteria */}
       <div>
-        <div className="flex justify-between items-center mb-3">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 gap-2">
           <label className="block text-sm font-medium text-gray-300">
             Acceptance Criteria
           </label>
@@ -120,7 +120,7 @@ export function StoryForm({
             type="button"
             onClick={addCriteria}
             disabled={disabled}
-            className="flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-700 disabled:opacity-50"
+            className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 disabled:opacity-50 self-start sm:self-auto touch-manipulation"
           >
             <Plus className="h-4 w-4" />
             Add Criteria
@@ -135,7 +135,7 @@ export function StoryForm({
                 value={criteria}
                 onChange={(e) => updateCriteria(index, e.target.value)}
                 placeholder={`Criteria ${index + 1}`}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                className="flex-1 px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors min-h-[44px]"
                 disabled={disabled}
               />
               {acceptanceCriteria.length > 1 && (
@@ -143,7 +143,7 @@ export function StoryForm({
                   type="button"
                   onClick={() => removeCriteria(index)}
                   disabled={disabled}
-                  className="p-2 text-red-500 hover:text-red-700 disabled:opacity-50"
+                  className="p-2 text-red-400 hover:text-red-300 disabled:opacity-50 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -155,10 +155,10 @@ export function StoryForm({
 
       {/* AI Analysis Section */}
       {onAnalyze && (
-        <div className="border-t pt-6">
-          <div className="flex justify-between items-center mb-4">
+        <div className="border-t border-gray-600 pt-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3">
             <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Brain className="h-5 w-5 text-indigo-600" />
+              <Brain className="h-5 w-5 text-blue-400" />
               AI Analysis
             </h3>
 
@@ -167,9 +167,9 @@ export function StoryForm({
               onClick={handleAnalyze}
               disabled={!canAnalyze}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors',
+                'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors min-h-[44px] self-start sm:self-auto touch-manipulation',
                 canAnalyze
-                  ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
                   : 'bg-gray-600 text-gray-400 cursor-not-allowed'
               )}
             >
@@ -179,14 +179,14 @@ export function StoryForm({
           </div>
 
           {aiAnalysis && (
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 space-y-3">
+            <div className="bg-blue-900/20 rounded-lg p-4 space-y-3 border border-blue-800">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-300">Complexity:</span>
+                <span className="text-sm font-medium text-blue-200">Complexity:</span>
                 <span className={cn(
                   'px-2 py-1 rounded-full text-xs font-medium',
-                  aiAnalysis.complexity === 'low' && 'bg-green-100 text-green-700',
-                  aiAnalysis.complexity === 'medium' && 'bg-yellow-100 text-yellow-700',
-                  aiAnalysis.complexity === 'high' && 'bg-red-100 text-red-700'
+                  aiAnalysis.complexity === 'low' && 'bg-green-900/30 text-green-300',
+                  aiAnalysis.complexity === 'medium' && 'bg-yellow-900/30 text-yellow-300',
+                  aiAnalysis.complexity === 'high' && 'bg-red-900/30 text-red-300'
                 )}>
                   {aiAnalysis.complexity.charAt(0).toUpperCase() + aiAnalysis.complexity.slice(1)}
                 </span>
@@ -194,14 +194,14 @@ export function StoryForm({
 
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <Lightbulb className="h-4 w-4 text-yellow-500" />
-                  <span className="text-sm font-medium text-gray-300">Suggested Points:</span>
+                  <Lightbulb className="h-4 w-4 text-yellow-400" />
+                  <span className="text-sm font-medium text-blue-200">Suggested Points:</span>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {aiAnalysis.suggestedPoints.map((point) => (
                     <span
                       key={point}
-                      className="px-2 py-1 bg-white border border-indigo-200 rounded text-sm font-medium text-indigo-700"
+                      className="px-2 py-1 bg-blue-800 border border-blue-600 rounded text-sm font-medium text-blue-100"
                     >
                       {point}
                     </span>
@@ -210,21 +210,21 @@ export function StoryForm({
               </div>
 
               <div>
-                <span className="text-sm font-medium text-gray-300 block mb-1">Analysis:</span>
-                <p className="text-sm text-gray-400">{aiAnalysis.reasoning}</p>
+                <span className="text-sm font-medium text-blue-200 block mb-1">Analysis:</span>
+                <p className="text-sm text-blue-100 break-words">{aiAnalysis.reasoning}</p>
               </div>
 
               {aiAnalysis.tags.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <Tag className="h-4 w-4 text-blue-500" />
-                    <span className="text-sm font-medium text-gray-300">Tags:</span>
+                    <Tag className="h-4 w-4 text-cyan-400" />
+                    <span className="text-sm font-medium text-blue-200">Tags:</span>
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {aiAnalysis.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"
+                        className="px-2 py-1 bg-cyan-900/30 text-cyan-300 rounded-full text-xs"
                       >
                         {tag}
                       </span>
@@ -242,9 +242,9 @@ export function StoryForm({
         type="submit"
         disabled={!canSubmit}
         className={cn(
-          'w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200',
+          'w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 min-h-[50px] touch-manipulation',
           canSubmit
-            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105'
+            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transform hover:scale-105'
             : 'bg-gray-600 text-gray-400 cursor-not-allowed'
         )}
       >

@@ -28,7 +28,7 @@ export function EstimationCards({
 
   return (
     <div
-      className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-11 gap-2"
+      className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-11 gap-2 lg:gap-3"
       role="radiogroup"
       aria-label="Story point estimation cards"
     >
@@ -40,10 +40,11 @@ export function EstimationCards({
           role="radio"
           aria-checked={selectedValue === value}
           className={cn(
-            'aspect-[3/4] rounded-lg font-semibold text-lg border-2 transition-all duration-200',
-            'flex items-center justify-center',
+            'aspect-[3/4] rounded-lg font-semibold text-base lg:text-lg border-2 transition-all duration-200',
+            'flex items-center justify-center min-h-[60px] lg:min-h-[80px]',
             'hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
             'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100',
+            'touch-manipulation', // Improves touch responsiveness
             getCardColor(value as EstimationCardValue),
             selectedValue === value && !revealed && 'ring-2 ring-blue-500 scale-105 border-blue-500',
             selectedValue === value && revealed && 'ring-2 ring-green-500 scale-105 border-green-500'

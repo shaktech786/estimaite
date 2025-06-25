@@ -54,7 +54,7 @@ EstimAIte/ (Node.js 23 Optimized)
 │   │   ├── ParticipantList.tsx         # Real-time participant display
 │   │   └── StoryForm.tsx               # Story submission with AI
 │   ├── hooks/
-│   │   └── useSocket.ts                # WebSocket client hook
+│   │   └── usePusher.ts                # Pusher client hook
 │   ├── lib/
 │   │   └── utils.ts                    # Utility functions
 │   └── types/

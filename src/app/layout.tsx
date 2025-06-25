@@ -16,6 +16,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  userScalable: true,
+  themeColor: '#111827',
 };
 
 export const metadata: Metadata = {
@@ -54,6 +56,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark h-full">
       <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased h-full bg-gray-900 text-white`}

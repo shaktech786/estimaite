@@ -67,31 +67,32 @@ export default function HomePage() {
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <header className="border-b border-gray-700 bg-gray-800">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-6">
           <div className="flex items-center justify-center">
             <div className="flex items-center gap-4">
-              <Logo size="lg" />
+              <Logo size="md" className="sm:hidden" />
+              <Logo size="lg" className="hidden sm:flex" />
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-white mb-4">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="text-center mb-8 lg:mb-12">
+          <h2 className="text-2xl lg:text-3xl font-bold text-white mb-4">
             Planning Poker Made Simple
           </h2>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+          <p className="text-base lg:text-lg text-gray-300 max-w-2xl mx-auto selectable-text">
             Estimate user stories with your team using AI-powered insights.
             No sign-up required, sessions are temporary and private.
           </p>
         </div>
 
         {/* Action Cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-2xl mx-auto">
           {/* Create Room */}
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-sm">
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4 lg:p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 bg-blue-900/30 rounded-lg flex items-center justify-center">
                 <Plus className="h-5 w-5 text-blue-400" />
@@ -142,7 +143,7 @@ export default function HomePage() {
               <button
                 type="submit"
                 disabled={isCreating || !roomName.trim() || !participantName.trim()}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px] touch-manipulation"
               >
                 {isCreating ? 'Creating...' : 'Create Room'}
               </button>
@@ -150,7 +151,7 @@ export default function HomePage() {
           </div>
 
           {/* Join Room */}
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-sm">
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4 lg:p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 bg-green-900/30 rounded-lg flex items-center justify-center">
                 <LogIn className="h-5 w-5 text-green-400" />
@@ -198,7 +199,7 @@ export default function HomePage() {
               <button
                 type="submit"
                 disabled={isJoining || !roomCode.trim() || !participantName.trim()}
-                className="w-full bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px] touch-manipulation"
               >
                 {isJoining ? 'Joining...' : 'Join Room'}
               </button>
@@ -207,9 +208,9 @@ export default function HomePage() {
         </div>
 
         {/* Features */}
-        <div className="mt-16 text-center">
-          <h3 className="text-lg font-semibold text-white mb-8">Why EstimAIte?</h3>
-          <div className="grid md:grid-cols-3 gap-8 max-w-3xl mx-auto">
+        <div className="mt-12 lg:mt-16 text-center">
+          <h3 className="text-lg font-semibold text-white mb-6 lg:mb-8">Why EstimAIte?</h3>
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-3xl mx-auto">
             <div className="text-center">
               <div className="w-12 h-12 bg-blue-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
                 <Sparkles className="h-6 w-6 text-blue-400" />
@@ -244,8 +245,8 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-700 mt-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+      <footer className="border-t border-gray-700 mt-12 lg:mt-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 text-center">
           <p className="text-sm text-gray-400">
             Built with Next.js, powered by AI. No data stored, sessions expire automatically.
           </p>

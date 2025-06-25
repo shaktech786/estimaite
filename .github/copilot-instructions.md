@@ -8,7 +8,7 @@ This is a modern Next.js 15 App Router application for planning poker with AI en
 
 ### Architecture
 - Use Next.js 15 App Router with TypeScript
-- Implement real-time features with WebSockets (Socket.io)
+- Implement real-time features with Pusher
 - Use Tailwind CSS for styling with focus on accessibility
 - Follow atomic design principles for components
 - Implement proper error boundaries and loading states

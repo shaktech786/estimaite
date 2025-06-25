@@ -56,7 +56,7 @@ export interface EstimationResult {
   estimate: number;
 }
 
-// Socket.io event types
+// Pusher event types
 export interface ServerToClientEvents {
   'room-joined': (data: {
     roomId: string;
@@ -172,18 +172,18 @@ export interface RoomState {
   connected: boolean;
   loading: boolean;
   error?: string;
-  room: {
+  room?: {
     id: string;
     name: string;
     participantCount: number;
-  } | undefined;
+  };
   participant?: Participant;
   participants: Participant[];
   currentStory?: Story;
   estimates: EstimationResult[];
   revealed: boolean;
   isModerator: boolean;
-  selectedEstimate: number | undefined;
+  selectedEstimate?: number;
 }
 
 export type EstimationCardValue = 1 | 2 | 3 | 5 | 8 | 13 | 21 | 34 | 55 | 89 | '?';
