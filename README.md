@@ -40,18 +40,6 @@ A modern, AI-powered planning poker application built with Next.js 15 for agile 
 
 ## 🏗️ Project Structure
 
-\`\`\`
-src/
-├── app/
-│   ├── api/
-│   │   ├── rooms/          # Room management endpoints
-│   │   ├── socket/         # WebSocket server setup
-│   │   └── ai/            # AI analysis endpoints
-│   ├── room/[roomId]/     # Dynamic room pages
-│   ├── components/        # Reusable UI components
-│   ├── lib/              # Utility functions and configurations
-│   └── types/            # TypeScript type definitions
-\`\`\`
 
 ## 🚀 Getting Started
 
