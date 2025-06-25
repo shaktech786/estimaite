@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Users, Plus, LogIn, Sparkles } from 'lucide-react';
 import { Logo } from '@/components/Logo';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { KeyboardShortcutHint } from '@/components/KeyboardShortcutHint';
 
 export default function HomePage() {
   const router = useRouter();
@@ -62,6 +64,32 @@ export default function HomePage() {
       setIsJoining(false);
     }
   };
+
+  // Keyboard shortcuts for form submissions
+  const handleCreateRoom = () => {
+    if (canCreateRoom) {
+      createRoom({ preventDefault: () => {} } as React.FormEvent);
+    }
+  };
+
+  const handleJoinRoom = () => {
+    if (canJoinRoom) {
+      joinRoom({ preventDefault: () => {} } as React.FormEvent);
+    }
+  };
+
+  const canCreateRoom = roomName.trim() && participantName.trim() && !isCreating;
+  const canJoinRoom = roomCode.trim() && participantName.trim() && !isJoining;
+
+  const createPlatformInfo = useKeyboardShortcuts({
+    onSubmit: handleCreateRoom,
+    enabled: !!canCreateRoom
+  });
+
+  const joinPlatformInfo = useKeyboardShortcuts({
+    onSubmit: handleJoinRoom,
+    enabled: !!canJoinRoom
+  });
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -145,7 +173,15 @@ export default function HomePage() {
                 disabled={isCreating || !roomName.trim() || !participantName.trim()}
                 className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px] touch-manipulation"
               >
-                {isCreating ? 'Creating...' : 'Create Room'}
+                <div className="flex items-center justify-center gap-2">
+                  <span>{isCreating ? 'Creating...' : 'Create Room'}</span>
+                  {!isCreating && (
+                    <KeyboardShortcutHint 
+                      shortcutDisplay={createPlatformInfo.shortcutDisplay}
+                      isMobile={createPlatformInfo.isMobile}
+                    />
+                  )}
+                </div>
               </button>
             </form>
           </div>
@@ -201,7 +237,15 @@ export default function HomePage() {
                 disabled={isJoining || !roomCode.trim() || !participantName.trim()}
                 className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px] touch-manipulation"
               >
-                {isJoining ? 'Joining...' : 'Join Room'}
+                <div className="flex items-center justify-center gap-2">
+                  <span>{isJoining ? 'Joining...' : 'Join Room'}</span>
+                  {!isJoining && (
+                    <KeyboardShortcutHint 
+                      shortcutDisplay={joinPlatformInfo.shortcutDisplay}
+                      isMobile={joinPlatformInfo.isMobile}
+                    />
+                  )}
+                </div>
               </button>
             </form>
           </div>

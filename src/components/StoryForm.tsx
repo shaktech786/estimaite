@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Plus, Trash2, Brain, Lightbulb, Tag } from 'lucide-react';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { KeyboardShortcutHint } from '@/components/KeyboardShortcutHint';
 import type { Story, AIAnalysis } from '@/types';
 
 interface StoryFormProps {
@@ -73,6 +75,24 @@ export function StoryForm({
 
   const canAnalyze = onAnalyze && title.trim() && description.trim() && !isAnalyzing;
   const canSubmit = title.trim() && description.trim() && !disabled;
+
+  // Keyboard shortcuts for form submission
+  const handleFormSubmit = () => {
+    if (canSubmit) {
+      const story: Story = {
+        title: title.trim(),
+        description: description.trim(),
+        acceptanceCriteria: acceptanceCriteria.filter(ac => ac.trim()),
+        ...(aiAnalysis && { aiAnalysis })
+      };
+      onSubmit(story);
+    }
+  };
+
+  const platformInfo = useKeyboardShortcuts({
+    onSubmit: handleFormSubmit,
+    enabled: !!canSubmit
+  });
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -248,7 +268,13 @@ export function StoryForm({
             : 'bg-gray-600 text-gray-400 cursor-not-allowed'
         )}
       >
-        Submit Story for Estimation
+        <div className="flex items-center justify-center gap-2">
+          <span>Submit Story for Estimation</span>
+          <KeyboardShortcutHint 
+            shortcutDisplay={platformInfo.shortcutDisplay}
+            isMobile={platformInfo.isMobile}
+          />
+        </div>
       </button>
     </form>
   );
