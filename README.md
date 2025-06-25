@@ -40,11 +40,48 @@ A modern, AI-powered planning poker application built with Next.js 15 for agile 
 
 ## 🏗️ Project Structure
 
+```
+src/
+├── app/                    # Next.js 15 App Router
+│   ├── api/
+│   │   ├── ai/analyze-story/route.ts    # AI story analysis
+│   │   └── rooms/route.ts               # Room management
+│   ├── room/[roomId]/page.tsx           # Room page
+│   ├── layout.tsx                       # Root layout
+│   └── page.tsx                         # Homepage
+├── components/
+│   ├── EstimationCards.tsx              # Poker cards
+│   ├── Logo.tsx                         # App logo
+│   ├── ParticipantList.tsx              # Participants
+│   └── StoryForm.tsx                    # Story form
+├── hooks/
+│   └── useSocket.ts                     # Socket hook
+├── lib/
+│   └── utils.ts                         # Utilities
+├── pages/api/
+│   └── socket.ts                        # Socket.io server
+└── types/
+    └── index.ts                         # Type definitions
+```
+
+
+## 🧹 Project Maintenance
+
+### Clean Architecture
+- **No Build Artifacts**: All temporary build files are properly gitignored
+- **No Empty Files**: All placeholder and empty files have been removed
+- **Organized Structure**: Files are logically organized following Next.js 15 conventions
+- **Type Safety**: Full TypeScript coverage with strict type checking
 
 ## 🚀 Getting Started
+- Use `npm run dev` for development server
+- Follow the established component structure in `/src/components/`
+- All API routes are in `/src/app/api/` using Next.js App Router
+- Socket.io server is set up in `/src/pages/api/socket.ts` for compatibility
+
 
 ### Prerequisites
-- Node.js 18.18.0 or later
+- Node.js 22.x or later
 - npm, yarn, pnpm, or bun
 
 ### Installation
