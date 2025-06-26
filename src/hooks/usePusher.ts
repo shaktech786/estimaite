@@ -7,6 +7,7 @@ import type { RoomState, Participant, Story } from '@/types';
 export function usePusher(roomId?: string, participantName?: string) {
   const participantRef = useRef<Participant | null>(null);
   const hasJoinedRef = useRef(false);
+  const joinInProgressRef = useRef(false); // Add join request lock
   const [roomState, setRoomState] = useState<RoomState>({
     connected: false,
     loading: false,
@@ -24,10 +25,20 @@ export function usePusher(roomId?: string, participantName?: string) {
     const initializeConnection = async () => {
       try {
         // Prevent multiple simultaneous connections
-        if (hasJoinedRef.current) return;
+        if (hasJoinedRef.current || joinInProgressRef.current) return;
+
+        joinInProgressRef.current = true; // Lock to prevent concurrent requests
         hasJoinedRef.current = true;
 
         setRoomState(prev => ({ ...prev, loading: true }));
+
+        // Get or create session ID for this browser session
+        const sessionKey = `estimaite-session-${roomId}`;
+        let sessionId = sessionStorage.getItem(sessionKey);
+        if (!sessionId) {
+          sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          sessionStorage.setItem(sessionKey, sessionId);
+        }
 
         // Join the room
         const response = await fetch('/api/pusher/room', {
@@ -37,6 +48,7 @@ export function usePusher(roomId?: string, participantName?: string) {
             action: 'join',
             roomId,
             participantName,
+            sessionId, // Include session ID
           }),
         });
 
@@ -108,11 +120,14 @@ export function usePusher(roomId?: string, participantName?: string) {
       } catch (error) {
         console.error('Failed to initialize connection:', error);
         hasJoinedRef.current = false; // Reset on error
+        joinInProgressRef.current = false; // Reset lock on error
         setRoomState(prev => ({
           ...prev,
           loading: false,
           error: error instanceof Error ? error.message : 'Connection failed',
         }));
+      } finally {
+        joinInProgressRef.current = false; // Always reset lock
       }
     };
 
@@ -121,6 +136,7 @@ export function usePusher(roomId?: string, participantName?: string) {
     return () => {
       // Cleanup: leave room and unsubscribe
       hasJoinedRef.current = false;
+      joinInProgressRef.current = false; // Reset lock on cleanup
       if (participantRef.current) {
         fetch('/api/pusher/room', {
           method: 'POST',

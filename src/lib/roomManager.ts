@@ -70,7 +70,7 @@ export function getRoomState(roomId: string): RoomState | null {
       ...(estimate !== undefined && { estimate })
     };
   });
-  
+
   const estimates: EstimationResult[] = Array.from(room.estimates.entries()).map(([participantId, estimate]) => {
     const participant = room.participants.get(participantId);
     return {
@@ -116,25 +116,22 @@ export function addParticipant(roomId: string, participant: Participant): boolea
   const room = rooms.get(roomId);
   if (!room) return false;
 
-  // Check if participant already exists by name to prevent duplicates
-  const existingParticipant = Array.from(room.participants.values())
-    .find(p => p.name.toLowerCase() === participant.name.toLowerCase());
+  // Check if participant already exists (for reconnections)
+  const existingParticipant = room.participants.get(participant.id);
 
   if (existingParticipant) {
-    // Update existing participant instead of creating duplicate
-    existingParticipant.isReady = false;
-    existingParticipant.joinedAt = new Date();
-    room.participants.set(existingParticipant.id, existingParticipant);
-    room.lastActivity = new Date();
-    return true;
+    // Update existing participant (reconnection scenario)
+    room.participants.set(participant.id, { ...existingParticipant, ...participant });
+  } else {
+    // Set first participant as moderator
+    if (room.participants.size === 0) {
+      room.moderatorId = participant.id;
+    }
+
+    // Add new participant
+    room.participants.set(participant.id, participant);
   }
 
-  // Set first participant as moderator
-  if (room.participants.size === 0) {
-    room.moderatorId = participant.id;
-  }
-
-  room.participants.set(participant.id, participant);
   room.lastActivity = new Date();
   return true;
 }
@@ -165,14 +162,14 @@ export function submitStory(roomId: string, story: Story): boolean {
   room.currentStory = story;
   room.estimates.clear();
   room.revealed = false;
-  
+
   // Start voting timer (5 minutes default)
   room.votingTimer = {
     startTime: new Date(),
     duration: 300, // 5 minutes
     active: true,
   };
-  
+
   room.lastActivity = new Date();
   return true;
 }
@@ -191,12 +188,12 @@ export function revealEstimates(roomId: string): boolean {
   if (!room) return false;
 
   room.revealed = true;
-  
+
   // Stop the voting timer when estimates are revealed
   if (room.votingTimer) {
     room.votingTimer.active = false;
   }
-  
+
   room.lastActivity = new Date();
   return true;
 }
@@ -207,7 +204,7 @@ export function resetEstimates(roomId: string): boolean {
 
   room.estimates.clear();
   room.revealed = false;
-  
+
   // Restart voting timer for new round
   if (room.currentStory) {
     room.votingTimer = {
@@ -216,7 +213,7 @@ export function resetEstimates(roomId: string): boolean {
       active: true,
     };
   }
-  
+
   room.lastActivity = new Date();
   return true;
 }
@@ -260,14 +257,6 @@ export function getRoomData(roomId: string) {
   return rooms.get(roomId);
 }
 
-export function getExistingParticipant(roomId: string, participantName: string): Participant | null {
-  const room = rooms.get(roomId);
-  if (!room) return null;
-
-  return Array.from(room.participants.values())
-    .find(p => p.name.toLowerCase() === participantName.toLowerCase()) || null;
-}
-
 export function startVotingTimer(roomId: string, duration: number = 300): boolean {
   const room = rooms.get(roomId);
   if (!room) return false;
@@ -298,4 +287,30 @@ export function isVotingTimerExpired(roomId: string): boolean {
 
   const elapsed = Math.floor((new Date().getTime() - room.votingTimer.startTime.getTime()) / 1000);
   return elapsed >= room.votingTimer.duration;
+}
+
+export function getParticipantBySessionId(roomId: string, sessionId: string): Participant | null {
+  const room = rooms.get(roomId);
+  if (!room || !sessionId) return null;
+
+  return Array.from(room.participants.values())
+    .find(participant => participant.sessionId === sessionId) || null;
+}
+
+export function cleanupStaleParticipantsBySession(roomId: string, sessionId: string, currentParticipantId: string): boolean {
+  const room = rooms.get(roomId);
+  if (!room || !sessionId) return false;
+
+  let removed = false;
+  for (const [participantId, participant] of room.participants.entries()) {
+    // Remove any participants with the same session ID but different participant ID
+    if (participant.sessionId === sessionId && participantId !== currentParticipantId) {
+      room.participants.delete(participantId);
+      room.estimates.delete(participantId);
+      removed = true;
+      console.log(`Cleaned up stale participant ${participantId} for session ${sessionId}`);
+    }
+  }
+
+  return removed;
 }

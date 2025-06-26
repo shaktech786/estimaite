@@ -21,6 +21,8 @@ A modern, AI-powered planning poker application built with Next.js 15 for agile 
 - **Live Updates**: Real-time participant status and estimation progress
 - **Session Management**: Automatic room cleanup and moderator controls
 - **Multi-device Support**: Seamless experience across desktop and mobile
+- **Session-based Participants**: Each browser session maintains independent participant identity
+- **Duplicate Prevention**: Robust protection against duplicate participants from the same session
 
 ### 🎨 Modern UI/UX
 - **Responsive Design**: Mobile-first approach with beautiful animations
@@ -73,16 +75,29 @@ src/
 - **Organized Structure**: Files are logically organized following Next.js 15 conventions
 - **Type Safety**: Full TypeScript coverage with strict type checking
 
-## 🚀 Getting Started
-- Use `npm run dev` for development server
-- Follow the established component structure in `/src/components/`
-- All API routes are in `/src/app/api/` using Next.js App Router
-- Pusher is configured for real-time communication
+### Session Management
+- **Session-based Participants**: Each browser session (normal, incognito, different browsers) gets a unique session ID
+- **Duplicate Prevention**: Multiple safeguards prevent duplicate participants from single user joins
+- **Automatic Cleanup**: Stale participants are automatically removed when sessions reconnect
+- **Cross-session Support**: Multiple participants with the same name are distinguished with session indicators
 
+### Testing
+- **Comprehensive Test Suite**: 45+ tests covering all functionality using Vitest
+- **Component Testing**: React components tested with Testing Library
+- **Integration Testing**: Room management and API endpoints fully tested
+- **Multi-session Testing**: Specific tests for session-based participant management
+
+## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js 22.x or later
 - npm, yarn, pnpm, or bun
+
+### Quick Start Commands
+- `npm run dev` - Start development server
+- `npm test` - Run test suite
+- `npm run build` - Build for production
+- `npm run type-check` - Check TypeScript types
 
 ### Installation
 

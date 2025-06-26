@@ -259,8 +259,8 @@ export default function RoomPage() {
                         >
                           <Eye className="h-4 w-4" />
                           <span className="hidden sm:inline">
-                            {roomState.estimates.length === roomState.participants.length 
-                              ? 'Reveal All' 
+                            {roomState.estimates.length === roomState.participants.length
+                              ? 'Reveal All'
                               : `Reveal (${roomState.estimates.length})`}
                           </span>
                         </button>

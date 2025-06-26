@@ -73,6 +73,12 @@ export function ParticipantList({
                       isCurrentUser ? 'text-white' : 'text-gray-300'
                     )}>
                       {participant.name}
+                      {/* Show session indicator if there are multiple participants with the same name */}
+                      {participants.filter(p => p.name.toLowerCase() === participant.name.toLowerCase()).length > 1 && (
+                        <span className="text-xs text-gray-500 ml-1">
+                          #{participant.id.slice(-4)}
+                        </span>
+                      )}
                     </span>
 
                     {isModerator && (

@@ -78,7 +78,7 @@ export function OnboardingSteps({
                 <step.icon className="h-3 w-3" />
               )}
             </div>
-            
+
             <div className="flex-1 min-w-0">
               <h4 className={cn(
                 'text-sm font-medium',

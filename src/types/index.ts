@@ -7,6 +7,7 @@ export interface Participant {
   isReady: boolean;
   estimate?: number;
   joinedAt: Date;
+  sessionId?: string; // Optional for backward compatibility
 }
 
 export interface Room {

@@ -10,9 +10,10 @@ import {
   getRoomState,
   roomExists,
   getRoomData,
-  getExistingParticipant,
   createOrRecoverRoom,
-  isVotingTimerExpired
+  isVotingTimerExpired,
+  getParticipantBySessionId,
+  cleanupStaleParticipantsBySession
 } from '@/lib/roomManager';
 
 export async function POST(request: NextRequest) {
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
       console.log(`Voting timer expired for room ${roomId}, auto-revealing estimates`);
       revealEstimates(roomId);
       const expiredRoomState = getRoomState(roomId);
-      
+
       // Broadcast timer expiration
       await pusherServer.trigger(channelName, PUSHER_EVENTS.ESTIMATES_REVEALED, {
         roomState: expiredRoomState,
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'join': {
-        const { participantName } = data;
+        const { participantName, sessionId } = data;
         if (!participantName) {
           return NextResponse.json(
             { error: 'Participant name is required' },
@@ -56,23 +57,54 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // Check if participant already exists in the room
-        let participant = getExistingParticipant(roomId, participantName);
-        const isNewParticipant = !participant;
+        console.log(`Join request: room=${roomId}, name=${participantName}, session=${sessionId}`);
+
+        // Check if participant with this session ID already exists
+        let participant = getParticipantBySessionId(roomId, sessionId);
+        let isNewParticipant = false;
 
         if (!participant) {
-          // Create new participant if doesn't exist
+          console.log(`Creating new participant for session ${sessionId}`);
+          // Create new participant for new session
           participant = {
             id: `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             name: participantName,
             socketId: '',
             isReady: false,
             joinedAt: new Date(),
+            sessionId: sessionId || `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           };
+          isNewParticipant = true;
         } else {
-          // Update existing participant's join time
+          console.log(`Updating existing participant ${participant.id} for session ${sessionId}`);
+
+          // Check if this is a rapid duplicate request (within 1 second)
+          const timeSinceJoin = new Date().getTime() - participant.joinedAt.getTime();
+          if (timeSinceJoin < 1000) {
+            console.log(`Ignoring rapid duplicate join request for session ${sessionId}`);
+            // Return the existing participant data without broadcasting
+            const roomState = getRoomState(roomId);
+            const roomData = getRoomData(roomId);
+            return NextResponse.json({
+              participant,
+              roomState,
+              isModerator: roomData?.moderatorId === participant.id,
+            });
+          }
+
+          // Update existing participant (reconnection)
+          participant.name = participantName; // Allow name updates
           participant.joinedAt = new Date();
           participant.isReady = false;
+          // Keep existing estimates if any
+        }
+
+        // Clean up any stale participants with the same session ID
+        if (sessionId) {
+          const cleaned = cleanupStaleParticipantsBySession(roomId, sessionId, participant.id);
+          if (cleaned) {
+            console.log(`Cleaned up stale participants for session ${sessionId}`);
+          }
         }
 
         const success = addParticipant(roomId, participant);
@@ -86,7 +118,9 @@ export async function POST(request: NextRequest) {
         const roomState = getRoomState(roomId);
         const roomData = getRoomData(roomId);
 
-        // Only broadcast if this is a new participant (not just a reconnection)
+        console.log(`Join successful: participant=${participant.id}, isNew=${isNewParticipant}, totalParticipants=${roomState?.participants.length || 0}`);
+
+        // Only broadcast if this is a genuinely new participant
         if (isNewParticipant) {
           await pusherServer.trigger(channelName, PUSHER_EVENTS.PARTICIPANT_JOINED, {
             participant,
