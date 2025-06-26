@@ -59,12 +59,32 @@ export async function POST(request: NextRequest) {
 
         console.log(`Join request: room=${roomId}, name=${participantName}, session=${sessionId}`);
 
+        // First, let's log the current room state
+        const currentRoomState = getRoomState(roomId);
+        console.log(`Current room has ${currentRoomState?.participants.length || 0} participants`);
+        currentRoomState?.participants.forEach((p, index) => {
+          console.log(`  Participant ${index + 1}: id=${p.id}, name=${p.name}, session=${p.sessionId}`);
+        });
+
         // Check if participant with this session ID already exists
         let participant = getParticipantBySessionId(roomId, sessionId);
         let isNewParticipant = false;
 
         if (!participant) {
           console.log(`Creating new participant for session ${sessionId}`);
+          
+          // DEFENSIVE CHECK: Make sure we're not accidentally overriding someone
+          // Check if there's already a participant with the same name but different session
+          const existingWithSameName = currentRoomState?.participants.find(p => 
+            p.name === participantName && p.sessionId !== sessionId
+          );
+          if (existingWithSameName) {
+            console.log(`WARNING: Found existing participant with same name but different session:`);
+            console.log(`  Existing: id=${existingWithSameName.id}, session=${existingWithSameName.sessionId}`);
+            console.log(`  New: session=${sessionId}`);
+            console.log(`  This should create a separate participant, not override!`);
+          }
+          
           // Create new participant for new session
           participant = {
             id: `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -117,6 +137,21 @@ export async function POST(request: NextRequest) {
 
         const roomState = getRoomState(roomId);
         const roomData = getRoomData(roomId);
+
+        // DEFENSIVE CHECK: Verify the participant was added correctly
+        console.log(`After adding participant:`);
+        console.log(`  Room now has ${roomState?.participants.length || 0} participants`);
+        roomState?.participants.forEach((p, index) => {
+          console.log(`    Participant ${index + 1}: id=${p.id}, name=${p.name}, session=${p.sessionId}`);
+        });
+        
+        // Verify our participant is in the room
+        const addedParticipant = roomState?.participants.find(p => p.id === participant.id);
+        if (!addedParticipant) {
+          console.error(`ERROR: Participant ${participant.id} was not found in room after adding!`);
+        } else {
+          console.log(`SUCCESS: Participant ${participant.id} confirmed in room`);
+        }
 
         console.log(`Join successful: participant=${participant.id}, isNew=${isNewParticipant}, totalParticipants=${roomState?.participants.length || 0}`);
 
