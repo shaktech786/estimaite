@@ -19,7 +19,7 @@ A modern, AI-powered planning poker application built with Next.js 15 for agile 
 ### ⚡ Real-time Collaboration
 - **WebSocket Integration**: Instant synchronization across all participants
 - **Live Updates**: Real-time participant status and estimation progress
-- **Session Management**: Automatic room cleanup and moderator controls
+- **Session Management**: Automatic room cleanup and egalitarian access
 - **Multi-device Support**: Seamless experience across desktop and mobile
 - **Session-based Participants**: Each browser session maintains independent participant identity
 - **Duplicate Prevention**: Robust protection against duplicate participants from the same session
@@ -91,44 +91,113 @@ src/
 
 ### Prerequisites
 - Node.js 22.x or later
-- npm, yarn, pnpm, or bun
+- npm 10.0.0 or later
 
-### Quick Start Commands
-- `npm run dev` - Start development server
-- `npm test` - Run test suite
-- `npm run build` - Build for production
-- `npm run type-check` - Check TypeScript types
-
-### Installation
+### Environment Setup
 
 1. **Clone the repository**
-   \`\`\`bash
-   git clone <repository-url>
-   cd estimAIte
-   \`\`\`
+   ```bash
+   git clone [repository-url]
+   cd estimaite
+   ```
 
 2. **Install dependencies**
-   \`\`\`bash
+   ```bash
    npm install
-   \`\`\`
+   ```
 
-3. **Set up environment variables**
-   \`\`\`bash
-   cp .env.example .env.local
-   \`\`\`
+3. **Configure environment variables**
+   Create a `.env.local` file in the project root with the following:
    
-   Add your OpenAI API key:
-   \`\`\`
-   OPENAI_API_KEY=your_openai_api_key_here
-   \`\`\`
+   ```bash
+   # Environment configuration for local development
+   NODE_ENV="development"
+   
+   # Pusher configuration (required for real-time features)
+   PUSHER_APP_ID="your_pusher_app_id"
+   PUSHER_KEY="your_pusher_key"
+   PUSHER_SECRET="your_pusher_secret"
+   PUSHER_CLUSTER="your_pusher_cluster"
+   
+   # Client-side Pusher config
+   NEXT_PUBLIC_PUSHER_KEY="your_pusher_key"
+   NEXT_PUBLIC_PUSHER_CLUSTER="your_pusher_cluster"
+   
+   # OpenAI API configuration for AI features
+   OPENAI_API_KEY="your_openai_api_key"
+   
+   # Local development settings
+   PORT=3000
+   NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+   ```
+   
+   **Using Vercel CLI (recommended):**
+   ```bash
+   # Install Vercel CLI globally if you haven't
+   npm install -g vercel
+   
+   # Login to Vercel
+   vercel login
+   
+   # Link your project (if not already linked)
+   vercel link
+   
+   # Pull environment variables
+   vercel env pull .env.local
+   ```
+   
+   **Note:** If using env vars from Vercel for local development, change `NODE_ENV` to "development".
 
-4. **Run the development server**
-   \`\`\`bash
+4. **Start the development server**
+   ```bash
    npm run dev
-   \`\`\`
+   ```
 
-5. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+5. **Open the application**
+   Visit [http://localhost:3000](http://localhost:3000) in your browser (or the port shown in your terminal, e.g., http://localhost:3002).
+
+### Verifying Setup
+
+To verify your setup is working correctly:
+
+1. Visit the local URL shown in your terminal (typically http://localhost:3000) - You should see the homepage
+2. Create a new planning room
+3. Try creating or joining a room
+4. Check that real-time updates work when using multiple browser windows
+5. Verify AI analysis works when submitting a user story
+
+### Troubleshooting
+
+If you encounter issues:
+
+#### Application Won't Start
+- Check if another process is using the default port (Next.js will automatically select an alternative port)
+- Ensure Node.js version 22.x+ is installed (`node --version`)
+- Try clearing the Next.js cache: `npm run clean`
+
+#### Real-time Features Not Working
+- Verify Pusher credentials in `.env.local` 
+- Check browser console for WebSocket connection errors
+- Ensure all Pusher variables are correctly set (both server and client side)
+
+#### AI Analysis Features Not Working
+- Verify your OpenAI API key is valid
+- Check API rate limits or quotas in OpenAI dashboard
+- Look for API errors in the server logs
+
+#### Page Not Found or Styling Issues
+- Ensure that Tailwind CSS is properly initialized
+- Check for JavaScript errors preventing the app from rendering
+- Try a hard refresh to clear browser cache (Ctrl+F5)
+
+### Available Commands
+- `npm run dev` - Start development server with Turbopack
+- `npm test` - Run test suite with Vitest
+- `npm run build` - Build for production
+- `npm start` - Start production server
+- `npm run lint` - Check code for style issues
+- `npm run type-check` - Verify TypeScript types
+- `npm run check` - Run type-check, lint, and tests
 
 ## 🎯 Usage
 
@@ -138,66 +207,32 @@ src/
 3. Share the room code with your team members
 
 ### Joining a Room
-1. Enter the room code provided by the moderator
+1. Enter the room code provided by another participant
 2. Add your name and click "Join Room"
 3. Start collaborating on story estimation
 
 ### Running Estimation Sessions
-1. **Moderator submits a user story** with title, description, and acceptance criteria
+1. **Any user submits a user story** with just a title
 2. **AI analyzes the story** and provides complexity assessment and suggestions
 3. **Team members submit estimates** using the planning poker cards
-4. **Reveal estimates** when all participants are ready
-5. **Discuss and re-estimate** if needed
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### Development Workflow
-1. Fork the repository
-2. Create a feature branch: \`git checkout -b feature/amazing-feature\`
-3. Commit your changes: \`git commit -m 'Add amazing feature'\`
-4. Push to the branch: \`git push origin feature/amazing-feature\`
-5. Open a Pull Request
+4. **Anyone can reveal estimates** when the team is ready
+5. **Discuss and re-estimate** if needed by clicking Reset
 
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## � Security Notice
 
-- Next.js team for the amazing framework
-- OpenAI for AI capabilities
-- Tailwind CSS for the beautiful styling system
-- Pusher for real-time communication
-- The agile community for inspiration
+This project follows security best practices for credential management:
 
-## 🔮 Roadmap
+- All API keys and secrets are managed through environment variables
+- No sensitive data is stored persistently
+- Environment variables are never committed to the repository
+- All user inputs are properly sanitized
+- API endpoints are rate-limited
 
-- [ ] Advanced AI insights and recommendations
-- [ ] Integration with popular project management tools
-- [ ] Enhanced accessibility features
-- [ ] Performance optimizations
-- [ ] Extended customization options
-
-## 🔐 Security Notice
-
-**IMPORTANT**: This repository uses secure credential management practices:
-
-### For Local Development:
-1. Copy `.env.local.example` to `.env.local`
-2. Replace placeholder values with your actual credentials
-3. Use the private setup script: `./setup-env-private.sh` (if provided)
-4. Never commit `.env.local` or any files containing real credentials
-
-### For Production Deployment:
-1. Use `.env.production` as reference for actual values
-2. Set all environment variables in Vercel dashboard
-3. Verify all sensitive files are gitignored
-4. Follow the security checklist in `SECURITY_AUDIT.md`
-
-### Security Features:
-- ✅ No persistent data storage
+For production deployment, configure all environment variables through your hosting platform (e.g., Vercel).
 - ✅ Automatic session cleanup
 - ✅ Input validation and sanitization  
 - ✅ Rate limiting on API endpoints

@@ -10,7 +10,7 @@ import { RoomCodeCopy } from '@/components/RoomCodeCopy';
 import { OnboardingSteps } from '@/components/OnboardingSteps';
 import { VotingTimer } from '@/components/VotingTimer';
 import { calculateEstimationStats } from '@/lib/utils';
-import { BarChart3, Users, Eye, RotateCcw, Crown, FileText } from 'lucide-react';
+import { BarChart3, Users, Eye, RotateCcw, FileText } from 'lucide-react';
 import type { EstimationCardValue, Story, AIAnalysis } from '@/types';
 
 export default function RoomPage() {
@@ -128,12 +128,7 @@ export default function RoomPage() {
                 <span className="sm:hidden">{roomState.participants.length}</span>
               </div>
 
-              {roomState.isModerator && (
-                <div className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm bg-yellow-900/20 text-yellow-300 px-2 lg:px-3 py-1 rounded-full border border-yellow-800">
-                  <Crown className="h-3 w-3 lg:h-4 lg:w-4" />
-                  <span className="hidden sm:inline">Moderator</span>
-                </div>
-              )}
+              {/* Removed moderator badge - all users have equal permissions */}
             </div>
           </div>
         </div>
@@ -146,7 +141,7 @@ export default function RoomPage() {
             <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 lg:p-6 lg:sticky lg:top-24">
               <ParticipantList
                 participants={roomState.participants}
-                moderatorId={roomState.isModerator ? (roomState.participant?.id || '') : ''}
+                moderatorId="" /* No moderator - all users have equal permissions */
                 currentUserId={roomState.participant?.id || ''}
                 revealed={roomState.revealed}
                 roomId={roomId}
@@ -160,7 +155,6 @@ export default function RoomPage() {
             <OnboardingSteps
               currentStep={currentStep}
               participantCount={roomState.participants.length}
-              isModerator={roomState.isModerator}
             />
 
             {/* Voting Timer */}
@@ -169,23 +163,25 @@ export default function RoomPage() {
                 initialTime={roomState.votingTimer.remainingTime}
                 active={roomState.votingTimer.active}
                 onTimeUp={() => {
-                  if (roomState.isModerator) {
-                    actions.revealEstimates();
-                  }
+                  actions.revealEstimates(); // Anyone can reveal estimates when time is up
                 }}
-                showControls={roomState.isModerator}
+                showControls={true} // Anyone can control the timer
+                onToggle={(paused) => {
+                  // Logic to handle timer pause/resume would go here
+                  console.log(`Timer ${paused ? 'paused' : 'resumed'}`);
+                }}
               />
             )}
 
-            {/* Story Form - Only for moderators when no current story */}
-            {roomState.isModerator && !roomState.currentStory && (
+            {/* Story Form - Available to all users when no current story */}
+            {!roomState.currentStory && (
               <section className="bg-gray-800 border border-gray-700 rounded-lg p-4 lg:p-6">
                 <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <FileText className="h-5 w-5 text-blue-400" />
-                  Add User Story
+                  Add Story for Estimation
                 </h2>
                 <p className="text-gray-300 mb-6">
-                  Submit a user story for your team to estimate. Include clear acceptance criteria for better estimates.
+                  Enter a story title or JIRA ID to start the estimation process.
                 </p>
                 <StoryForm
                   onSubmit={handleStorySubmit}
@@ -248,34 +244,33 @@ export default function RoomPage() {
                     )}
                   </div>
 
-                  {roomState.isModerator && (
-                    <div className="flex gap-2">
-                      {!roomState.revealed ? (
-                        <button
-                          onClick={actions.revealEstimates}
-                          disabled={roomState.estimates.length === 0}
-                          className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
-                          aria-label="Reveal all estimates"
-                        >
-                          <Eye className="h-4 w-4" />
-                          <span className="hidden sm:inline">
-                            {roomState.estimates.length === roomState.participants.length
-                              ? 'Reveal All'
-                              : `Reveal (${roomState.estimates.length})`}
-                          </span>
-                        </button>
-                      ) : (
-                        <button
-                          onClick={actions.resetEstimates}
-                          className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px]"
-                          aria-label="Reset estimates for new round"
-                        >
-                          <RotateCcw className="h-4 w-4" />
-                          <span className="hidden sm:inline">Reset</span>
-                        </button>
-                      )}
-                    </div>
-                  )}
+                  {/* Allow any user to reveal and reset estimates */}
+                  <div className="flex gap-2">
+                    {!roomState.revealed ? (
+                      <button
+                        onClick={actions.revealEstimates}
+                        disabled={roomState.estimates.length === 0}
+                        className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Reveal all estimates"
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span className="hidden sm:inline">
+                          {roomState.estimates.length === roomState.participants.length
+                            ? 'Reveal All'
+                            : `Reveal (${roomState.estimates.length})`}
+                        </span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={actions.resetEstimates}
+                        className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px]"
+                        aria-label="Reset estimates for new round"
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                        <span className="hidden sm:inline">Reset</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <EstimationCards

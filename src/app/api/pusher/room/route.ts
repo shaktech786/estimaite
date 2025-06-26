@@ -208,14 +208,8 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        const roomData = getRoomData(roomId);
-        if (roomData?.moderatorId !== participantId) {
-          return NextResponse.json(
-            { error: 'Only moderator can submit stories' },
-            { status: 403 }
-          );
-        }
-
+        // Any user can submit stories - no need to check moderator status
+        
         const success = submitStory(roomId, story);
         if (!success) {
           return NextResponse.json(
@@ -264,15 +258,7 @@ export async function POST(request: NextRequest) {
       }
 
       case 'reveal-estimates': {
-        const { participantId } = data;
-        const roomData = getRoomData(roomId);
-        if (roomData?.moderatorId !== participantId) {
-          return NextResponse.json(
-            { error: 'Only moderator can reveal estimates' },
-            { status: 403 }
-          );
-        }
-
+        // Anyone can reveal estimates
         const success = revealEstimates(roomId);
         if (!success) {
           return NextResponse.json(
@@ -292,15 +278,7 @@ export async function POST(request: NextRequest) {
       }
 
       case 'reset-estimates': {
-        const { participantId } = data;
-        const roomData = getRoomData(roomId);
-        if (roomData?.moderatorId !== participantId) {
-          return NextResponse.json(
-            { error: 'Only moderator can reset estimates' },
-            { status: 403 }
-          );
-        }
-
+        // Anyone can reset estimates
         const success = resetEstimates(roomId);
         if (!success) {
           return NextResponse.json(

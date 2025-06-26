@@ -5,14 +5,12 @@ import { cn } from '@/lib/utils';
 interface OnboardingStepsProps {
   currentStep: 'waiting' | 'story' | 'voting' | 'results';
   participantCount: number;
-  isModerator: boolean;
   className?: string;
 }
 
 export function OnboardingSteps({
   currentStep,
   participantCount,
-  isModerator,
   className = ''
 }: OnboardingStepsProps) {
   const steps = [
@@ -57,7 +55,7 @@ export function OnboardingSteps({
           <FileText className="h-4 w-4 text-blue-400" />
         </div>
         <h3 className="font-medium text-blue-100">
-          {isModerator ? 'Planning Poker Guide' : 'Session Progress'}
+          Planning Poker Guide
         </h3>
       </div>
 
@@ -106,7 +104,7 @@ export function OnboardingSteps({
         ))}
       </div>
 
-      {isModerator && currentStep === 'waiting' && participantCount === 1 && (
+      {currentStep === 'waiting' && participantCount === 1 && (
         <div className="mt-4 p-3 bg-amber-900/20 border border-amber-700/50 rounded-lg">
           <p className="text-amber-200 text-xs">
             💡 <strong>Tip:</strong> Planning poker works best with 3-8 team members. Share your room code to get started!

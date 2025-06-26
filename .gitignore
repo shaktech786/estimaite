@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# github workflow and instructions
+/.github
+
 # dependencies
 /node_modules
 /.pnp
@@ -62,3 +65,5 @@ next-env.d.ts
 # Backup files
 *.backup
 *.bak
+.env*.local
+

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Plus, Trash2, Brain, Lightbulb, Tag } from 'lucide-react';
+import { Brain, Lightbulb, Tag } from 'lucide-react';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { KeyboardShortcutHint } from '@/components/KeyboardShortcutHint';
 import type { Story, AIAnalysis } from '@/types';
@@ -18,39 +18,22 @@ export function StoryForm({
   disabled = false,
   initialStory
 }: StoryFormProps) {
+  // Simplified state - only title is required
   const [title, setTitle] = useState(initialStory?.title || '');
-  const [description, setDescription] = useState(initialStory?.description || '');
-  const [acceptanceCriteria, setAcceptanceCriteria] = useState<string[]>(
-    initialStory?.acceptanceCriteria || ['']
-  );
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(
     initialStory?.aiAnalysis || null
   );
 
-  const addCriteria = () => {
-    setAcceptanceCriteria([...acceptanceCriteria, '']);
-  };
-
-  const removeCriteria = (index: number) => {
-    setAcceptanceCriteria(acceptanceCriteria.filter((_, i) => i !== index));
-  };
-
-  const updateCriteria = (index: number, value: string) => {
-    const updated = [...acceptanceCriteria];
-    updated[index] = value;
-    setAcceptanceCriteria(updated);
-  };
-
   const handleAnalyze = async () => {
-    if (!onAnalyze || !title.trim() || !description.trim()) return;
+    if (!onAnalyze || !title.trim()) return;
 
     setIsAnalyzing(true);
     try {
       const analysis = await onAnalyze({
         title: title.trim(),
-        description: description.trim(),
-        acceptanceCriteria: acceptanceCriteria.filter(ac => ac.trim())
+        description: '', // Empty description
+        acceptanceCriteria: [] // No acceptance criteria
       });
       setAiAnalysis(analysis);
     } catch (error) {
@@ -63,26 +46,28 @@ export function StoryForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!title.trim() || disabled) return;
+
     const story: Story = {
       title: title.trim(),
-      description: description.trim(),
-      acceptanceCriteria: acceptanceCriteria.filter(ac => ac.trim()),
+      description: '', // Empty description
+      acceptanceCriteria: [], // No acceptance criteria
       ...(aiAnalysis && { aiAnalysis })
     };
 
     onSubmit(story);
   };
 
-  const canAnalyze = onAnalyze && title.trim() && description.trim() && !isAnalyzing;
-  const canSubmit = title.trim() && description.trim() && !disabled;
+  const canAnalyze = onAnalyze && title.trim() && !isAnalyzing;
+  const canSubmit = title.trim() && !disabled;
 
   // Keyboard shortcuts for form submission
   const handleFormSubmit = () => {
     if (canSubmit) {
       const story: Story = {
         title: title.trim(),
-        description: description.trim(),
-        acceptanceCriteria: acceptanceCriteria.filter(ac => ac.trim()),
+        description: '',
+        acceptanceCriteria: [],
         ...(aiAnalysis && { aiAnalysis })
       };
       onSubmit(story);
@@ -99,78 +84,18 @@ export function StoryForm({
       {/* Story Title */}
       <div>
         <label htmlFor="story-title" className="block text-sm font-medium text-gray-300 mb-2">
-          Story Title *
+          Story Title or JIRA ID *
         </label>
         <input
           type="text"
           id="story-title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="As a user, I want to..."
+          placeholder="Enter story title, JIRA ID, or paste from JIRA"
           className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors min-h-[44px]"
           required
           disabled={disabled}
         />
-      </div>
-
-      {/* Story Description */}
-      <div>
-        <label htmlFor="story-description" className="block text-sm font-medium text-gray-300 mb-2">
-          Description *
-        </label>
-        <textarea
-          id="story-description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Describe the feature in detail..."
-          rows={4}
-          className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
-          required
-          disabled={disabled}
-        />
-      </div>
-
-      {/* Acceptance Criteria */}
-      <div>
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 gap-2">
-          <label className="block text-sm font-medium text-gray-300">
-            Acceptance Criteria
-          </label>
-          <button
-            type="button"
-            onClick={addCriteria}
-            disabled={disabled}
-            className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 disabled:opacity-50 self-start sm:self-auto touch-manipulation"
-          >
-            <Plus className="h-4 w-4" />
-            Add Criteria
-          </button>
-        </div>
-
-        <div className="space-y-2">
-          {acceptanceCriteria.map((criteria, index) => (
-            <div key={index} className="flex gap-2">
-              <input
-                type="text"
-                value={criteria}
-                onChange={(e) => updateCriteria(index, e.target.value)}
-                placeholder={`Criteria ${index + 1}`}
-                className="flex-1 px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors min-h-[44px]"
-                disabled={disabled}
-              />
-              {acceptanceCriteria.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeCriteria(index)}
-                  disabled={disabled}
-                  className="p-2 text-red-400 hover:text-red-300 disabled:opacity-50 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* AI Analysis Section */}
@@ -269,7 +194,7 @@ export function StoryForm({
         )}
       >
         <div className="flex items-center justify-center gap-2">
-          <span>Submit Story for Estimation</span>
+          <span>Start Estimation</span>
           <KeyboardShortcutHint
             shortcutDisplay={platformInfo.shortcutDisplay}
             isMobile={platformInfo.isMobile}
