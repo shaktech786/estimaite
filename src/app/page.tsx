@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Users, Plus, LogIn, Sparkles } from 'lucide-react';
 import { Logo } from '@/components/Logo';
+import { BrandName } from '@/components/BrandName';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { KeyboardShortcutHint } from '@/components/KeyboardShortcutHint';
 
@@ -259,7 +260,9 @@ export default function HomePage() {
 
         {/* Features */}
         <div className="mt-12 lg:mt-16 text-center">
-          <h3 className="text-lg font-semibold text-white mb-6 lg:mb-8">Why EstimAIte?</h3>
+          <h3 className="text-lg font-semibold text-white mb-6 lg:mb-8">
+            Why <BrandName variant="dark" />?
+          </h3>
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-3xl mx-auto">
             <div className="text-center">
               <div className="w-12 h-12 bg-blue-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
