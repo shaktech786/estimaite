@@ -17,7 +17,7 @@ export interface FeedbackEmailData {
 function formatFeedbackType(type: string): string {
   const typeMap = {
     bug: '🐛 Bug Report',
-    feature: '✨ Feature Request', 
+    feature: '✨ Feature Request',
     privacy: '🔒 Privacy Concern',
     general: '💬 General Feedback'
   };
@@ -37,7 +37,7 @@ function generateEmailHTML(data: FeedbackEmailData): string {
       <title>EstimAIte Feedback</title>
     </head>
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-      
+
       <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px;">
         <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 600;">
           EstimAIte Feedback
@@ -74,10 +74,10 @@ function generateEmailHTML(data: FeedbackEmailData): string {
           <tr>
             <td style="padding: 6px 0; color: #718096; font-weight: 500; width: 120px;">Timestamp:</td>
             <td style="padding: 6px 0; color: #2d3748; font-family: 'Monaco', 'Consolas', monospace; font-size: 14px;">
-              ${new Date(data.timestamp).toLocaleString('en-US', { 
+              ${new Date(data.timestamp).toLocaleString('en-US', {
                 timeZone: 'America/New_York',
                 year: 'numeric',
-                month: 'long', 
+                month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
@@ -124,10 +124,10 @@ CONTACT INFORMATION:
 User Email: ${data.userEmail || 'Not provided'}
 
 TECHNICAL DETAILS:
-Timestamp: ${new Date(data.timestamp).toLocaleString('en-US', { 
+Timestamp: ${new Date(data.timestamp).toLocaleString('en-US', {
   timeZone: 'America/New_York',
   year: 'numeric',
-  month: 'long', 
+  month: 'long',
   day: 'numeric',
   hour: '2-digit',
   minute: '2-digit',
@@ -160,7 +160,7 @@ export async function sendFeedbackEmail(feedbackData: FeedbackEmailData) {
     }
 
     const emailSubject = `EstimAIte Feedback: ${formatFeedbackType(feedbackData.type)}`;
-    
+
     const result = await resend.emails.send({
       from: process.env.FROM_EMAIL,
       to: process.env.FEEDBACK_EMAIL,
@@ -205,8 +205,8 @@ const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
  * @returns boolean indicating if request should be allowed
  */
 export function checkRateLimit(
-  identifier: string, 
-  maxRequests: number = 5, 
+  identifier: string,
+  maxRequests: number = 5,
   windowMs: number = 15 * 60 * 1000 // 15 minutes
 ): boolean {
   const now = Date.now();

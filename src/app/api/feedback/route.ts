@@ -13,7 +13,7 @@ function getClientIP(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for');
   const realIP = request.headers.get('x-real-ip');
   const cfConnectingIP = request.headers.get('cf-connecting-ip');
-  
+
   if (forwarded) {
     return forwarded.split(',')[0]?.trim() || 'unknown';
   }
@@ -23,7 +23,7 @@ function getClientIP(request: NextRequest): string {
   if (cfConnectingIP) {
     return cfConnectingIP;
   }
-  
+
   // Fallback to a default identifier
   return 'unknown';
 }
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     const clientIP = getClientIP(request);
     if (!checkRateLimit(clientIP, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW)) {
       return NextResponse.json(
-        { 
+        {
           error: 'Rate limit exceeded. Please try again later.',
           retryAfter: Math.ceil(RATE_LIMIT_WINDOW / 1000 / 60) // minutes
         },
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     // Prepare feedback data
     const userAgent = request.headers.get('user-agent');
     const trimmedEmail = email?.trim();
-    
+
     const feedbackData: FeedbackEmailData = {
       type,
       message: message.trim(),
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error processing feedback:', error);
-    
+
     // Don't expose internal errors to client
     return NextResponse.json(
       { error: 'Internal server error. Please try again later.' },
