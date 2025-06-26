@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createRoom, roomExists, getRoomData } from '@/lib/roomManager';
+import { createRoom, roomExists, getRoomData, createOrRecoverRoom } from '@/lib/roomManager';
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,10 +48,18 @@ export async function GET(request: NextRequest) {
     }
 
     if (!roomExists(roomId)) {
-      return NextResponse.json(
-        { error: 'Room not found' },
-        { status: 404 }
-      );
+      // Try to recover the room (in case of serverless cold start)
+      console.log(`Room ${roomId} not found, attempting recovery...`);
+      const recovered = createOrRecoverRoom(roomId);
+      
+      if (!recovered) {
+        return NextResponse.json(
+          { error: 'Room not found. The room may have expired or never existed.' },
+          { status: 404 }
+        );
+      }
+      
+      console.log(`Room ${roomId} recovered successfully`);
     }
 
     const roomData = getRoomData(roomId);

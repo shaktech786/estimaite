@@ -1,6 +1,6 @@
 import type { Participant, Story, RoomState, EstimationResult } from '@/types';
 
-// In-memory room storage (you might want to use Redis in production)
+// In-memory room storage (temporary for serverless - rooms will reset on function restart)
 const rooms = new Map<string, {
   id: string;
   name: string;
@@ -13,17 +13,18 @@ const rooms = new Map<string, {
   lastActivity: Date;
 }>();
 
-// Cleanup inactive rooms every 30 minutes
-setInterval(() => {
+// Clean expired rooms on each operation (serverless-friendly)
+function cleanupExpiredRooms() {
   const now = new Date();
   const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000);
 
   for (const [roomId, room] of rooms.entries()) {
     if (room.lastActivity < thirtyMinutesAgo) {
+      console.log(`Cleaning up expired room: ${roomId}`);
       rooms.delete(roomId);
     }
   }
-}, 30 * 60 * 1000);
+}
 
 export function generateRoomId(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -36,6 +37,7 @@ export function generateRoomId(): string {
 
 export function createRoom(name: string): string {
   const roomId = generateRoomId();
+  console.log(`Creating room with ID: ${roomId}, name: ${name}`);
   rooms.set(roomId, {
     id: roomId,
     name,
@@ -47,6 +49,7 @@ export function createRoom(name: string): string {
     createdAt: new Date(),
     lastActivity: new Date(),
   });
+  console.log(`Room created. Total rooms: ${rooms.size}`);
   return roomId;
 }
 
@@ -172,7 +175,38 @@ export function resetEstimates(roomId: string): boolean {
 }
 
 export function roomExists(roomId: string): boolean {
-  return rooms.has(roomId);
+  cleanupExpiredRooms(); // Clean up expired rooms before checking
+  const exists = rooms.has(roomId);
+  console.log(`Room exists check: ${roomId} -> ${exists}`);
+  console.log(`Current rooms: ${Array.from(rooms.keys()).join(', ')}`);
+  return exists;
+}
+
+// Create a room on-demand if it doesn't exist (for recovery from cold starts)
+export function createOrRecoverRoom(roomId: string, roomName?: string): boolean {
+  if (rooms.has(roomId)) {
+    return false; // Room already exists
+  }
+
+  // Validate room ID format (8 alphanumeric characters)
+  if (!/^[A-Z0-9]{8}$/.test(roomId)) {
+    return false; // Invalid room ID format
+  }
+
+  console.log(`Recovering room: ${roomId}`);
+  rooms.set(roomId, {
+    id: roomId,
+    name: roomName || 'Recovered Room',
+    participants: new Map(),
+    currentStory: undefined,
+    estimates: new Map(),
+    revealed: false,
+    moderatorId: '',
+    createdAt: new Date(),
+    lastActivity: new Date(),
+  });
+
+  return true; // Room was recovered
 }
 
 export function getRoomData(roomId: string) {

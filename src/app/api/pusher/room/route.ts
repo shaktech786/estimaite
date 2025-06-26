@@ -10,7 +10,8 @@ import {
   getRoomState,
   roomExists,
   getRoomData,
-  getExistingParticipant
+  getExistingParticipant,
+  createOrRecoverRoom
 } from '@/lib/roomManager';
 
 export async function POST(request: NextRequest) {
@@ -18,10 +19,15 @@ export async function POST(request: NextRequest) {
     const { action, roomId, ...data } = await request.json();
 
     if (!roomId || !roomExists(roomId)) {
-      return NextResponse.json(
-        { error: 'Room not found' },
-        { status: 404 }
-      );
+      // Try to recover the room if it doesn't exist (serverless cold start recovery)
+      if (roomId && createOrRecoverRoom(roomId)) {
+        console.log(`Room ${roomId} recovered for action: ${action}`);
+      } else {
+        return NextResponse.json(
+          { error: 'Room not found. Please check the room code.' },
+          { status: 404 }
+        );
+      }
     }
 
     const channelName = getChannelName(roomId);
