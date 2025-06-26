@@ -1,12 +1,14 @@
 import React from 'react';
+import Link from 'next/link';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   iconOnly?: boolean;
+  clickable?: boolean;
 }
 
-export function Logo({ size = 'md', className = '', iconOnly = false }: LogoProps) {
+export function Logo({ size = 'md', className = '', iconOnly = false, clickable = true }: LogoProps) {
   const sizeClasses = {
     sm: { text: 'text-lg', icon: 'w-6 h-6' },
     md: { text: 'text-2xl', icon: 'w-8 h-8' },
@@ -50,18 +52,34 @@ export function Logo({ size = 'md', className = '', iconOnly = false }: LogoProp
     </div>
   );
 
-  if (iconOnly) {
-    return <LogoIcon className={`${sizeClasses[size].icon} ${className}`} />;
+  const LogoContent = () => {
+    if (iconOnly) {
+      return <LogoIcon className={`${sizeClasses[size].icon} ${className}`} />;
+    }
+
+    return (
+      <div className={`flex items-center gap-3 ${className}`}>
+        <LogoIcon className={sizeClasses[size].icon} />
+        <h1 className={`font-semibold text-white tracking-tight ${sizeClasses[size].text}`}>
+          <span>estim</span>
+          <span className="text-cyan-400">AI</span>
+          <span>te</span>
+        </h1>
+      </div>
+    );
+  };
+
+  if (!clickable) {
+    return <LogoContent />;
   }
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      <LogoIcon className={sizeClasses[size].icon} />
-      <h1 className={`font-semibold text-white tracking-tight ${sizeClasses[size].text}`}>
-        <span>estim</span>
-        <span className="text-cyan-400">AI</span>
-        <span>te</span>
-      </h1>
-    </div>
+    <Link 
+      href="/" 
+      className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
+      title="Go to home page"
+    >
+      <LogoContent />
+    </Link>
   );
 }
