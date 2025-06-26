@@ -9,9 +9,9 @@ import {
   resetEstimates,
   getRoomState,
   roomExists,
-  getRoomData
+  getRoomData,
+  getExistingParticipant
 } from '@/lib/roomManager';
-import type { Participant } from '@/types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,13 +36,24 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        const participant: Participant = {
-          id: `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          name: participantName,
-          socketId: '',
-          isReady: false,
-          joinedAt: new Date(),
-        };
+        // Check if participant already exists in the room
+        let participant = getExistingParticipant(roomId, participantName);
+        const isNewParticipant = !participant;
+        
+        if (!participant) {
+          // Create new participant if doesn't exist
+          participant = {
+            id: `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            name: participantName,
+            socketId: '',
+            isReady: false,
+            joinedAt: new Date(),
+          };
+        } else {
+          // Update existing participant's join time
+          participant.joinedAt = new Date();
+          participant.isReady = false;
+        }
 
         const success = addParticipant(roomId, participant);
         if (!success) {
@@ -55,11 +66,13 @@ export async function POST(request: NextRequest) {
         const roomState = getRoomState(roomId);
         const roomData = getRoomData(roomId);
 
-        // Broadcast participant joined
-        await pusherServer.trigger(channelName, PUSHER_EVENTS.PARTICIPANT_JOINED, {
-          participant,
-          roomState,
-        });
+        // Only broadcast if this is a new participant (not just a reconnection)
+        if (isNewParticipant) {
+          await pusherServer.trigger(channelName, PUSHER_EVENTS.PARTICIPANT_JOINED, {
+            participant,
+            roomState,
+          });
+        }
 
         return NextResponse.json({
           success: true,

@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { User, Crown, CheckCircle, Clock } from 'lucide-react';
+import { RoomCodeCopy } from '@/components/RoomCodeCopy';
 import type { Participant } from '@/types';
 
 interface ParticipantListProps {
@@ -8,16 +9,30 @@ interface ParticipantListProps {
   moderatorId?: string;
   currentUserId?: string;
   revealed?: boolean;
+  roomId?: string;
 }
 
 export function ParticipantList({
   participants,
   moderatorId,
   currentUserId,
-  revealed = false
+  revealed = false,
+  roomId
 }: ParticipantListProps) {
   return (
     <div className="space-y-4">
+      {/* Room Info */}
+      {roomId && (
+        <div className="bg-gray-800 border border-gray-700 rounded-lg p-3">
+          <RoomCodeCopy 
+            roomCode={roomId} 
+            showLabel={true} 
+            size="sm" 
+            className="justify-center"
+          />
+        </div>
+      )}
+
       <h3 className="text-base lg:text-lg font-semibold text-white flex items-center gap-2">
         <User className="h-4 w-4" />
         <span className="hidden sm:inline">Participants ({participants.length})</span>
@@ -113,9 +128,12 @@ export function ParticipantList({
       </div>
 
       {participants.length === 0 && (
-        <div className="text-center py-6 text-gray-400">
-          <User className="h-8 w-8 mx-auto mb-2 opacity-30" />
-          <p className="text-sm">No participants yet</p>
+        <div className="text-center py-8">
+          <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
+            <User className="h-6 w-6 text-gray-400" />
+          </div>
+          <p className="text-gray-400 text-sm">No participants in this room yet</p>
+          <p className="text-gray-500 text-xs mt-1">Share the room code to invite others</p>
         </div>
       )}
     </div>

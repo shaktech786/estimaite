@@ -6,6 +6,7 @@ import { EstimationCards } from '@/components/EstimationCards';
 import { ParticipantList } from '@/components/ParticipantList';
 import { StoryForm } from '@/components/StoryForm';
 import { Logo } from '@/components/Logo';
+import { RoomCodeCopy } from '@/components/RoomCodeCopy';
 import { calculateEstimationStats } from '@/lib/utils';
 import { BarChart3, Users, Eye, RotateCcw, Crown } from 'lucide-react';
 import type { EstimationCardValue, Story, AIAnalysis } from '@/types';
@@ -98,6 +99,12 @@ export default function RoomPage() {
               <Logo size="md" className="hidden lg:flex" />
               <div className="border-l border-gray-600 pl-3 lg:pl-4 min-w-0">
                 <h1 className="text-lg lg:text-xl font-semibold text-white truncate">Room: {roomId}</h1>
+                <RoomCodeCopy 
+                  roomCode={roomId} 
+                  showLabel={false} 
+                  size="sm" 
+                  className="mt-1"
+                />
                 <p className="text-xs lg:text-sm text-gray-300 truncate">Welcome, {participantName}</p>
               </div>
             </div>
@@ -130,6 +137,7 @@ export default function RoomPage() {
                 moderatorId={roomState.isModerator ? (roomState.participant?.id || '') : ''}
                 currentUserId={roomState.participant?.id || ''}
                 revealed={roomState.revealed}
+                roomId={roomId}
               />
             </div>
           </div>

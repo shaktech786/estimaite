@@ -6,6 +6,7 @@ import type { RoomState, Participant, Story } from '@/types';
 
 export function usePusher(roomId?: string, participantName?: string) {
   const participantRef = useRef<Participant | null>(null);
+  const hasJoinedRef = useRef(false);
   const [roomState, setRoomState] = useState<RoomState>({
     connected: false,
     loading: false,
@@ -22,6 +23,10 @@ export function usePusher(roomId?: string, participantName?: string) {
 
     const initializeConnection = async () => {
       try {
+        // Prevent multiple simultaneous connections
+        if (hasJoinedRef.current) return;
+        hasJoinedRef.current = true;
+
         setRoomState(prev => ({ ...prev, loading: true }));
 
         // Join the room
@@ -102,6 +107,7 @@ export function usePusher(roomId?: string, participantName?: string) {
 
       } catch (error) {
         console.error('Failed to initialize connection:', error);
+        hasJoinedRef.current = false; // Reset on error
         setRoomState(prev => ({
           ...prev,
           loading: false,
@@ -114,6 +120,7 @@ export function usePusher(roomId?: string, participantName?: string) {
 
     return () => {
       // Cleanup: leave room and unsubscribe
+      hasJoinedRef.current = false;
       if (participantRef.current) {
         fetch('/api/pusher/room', {
           method: 'POST',

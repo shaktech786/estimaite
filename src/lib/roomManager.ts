@@ -90,6 +90,19 @@ export function addParticipant(roomId: string, participant: Participant): boolea
   const room = rooms.get(roomId);
   if (!room) return false;
 
+  // Check if participant already exists by name to prevent duplicates
+  const existingParticipant = Array.from(room.participants.values())
+    .find(p => p.name.toLowerCase() === participant.name.toLowerCase());
+  
+  if (existingParticipant) {
+    // Update existing participant instead of creating duplicate
+    existingParticipant.isReady = false;
+    existingParticipant.joinedAt = new Date();
+    room.participants.set(existingParticipant.id, existingParticipant);
+    room.lastActivity = new Date();
+    return true;
+  }
+
   // Set first participant as moderator
   if (room.participants.size === 0) {
     room.moderatorId = participant.id;
@@ -164,4 +177,12 @@ export function roomExists(roomId: string): boolean {
 
 export function getRoomData(roomId: string) {
   return rooms.get(roomId);
+}
+
+export function getExistingParticipant(roomId: string, participantName: string): Participant | null {
+  const room = rooms.get(roomId);
+  if (!room) return null;
+
+  return Array.from(room.participants.values())
+    .find(p => p.name.toLowerCase() === participantName.toLowerCase()) || null;
 }
