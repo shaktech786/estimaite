@@ -51,14 +51,14 @@ export async function GET(request: NextRequest) {
       // Try to recover the room (in case of serverless cold start)
       console.log(`Room ${roomId} not found, attempting recovery...`);
       const recovered = createOrRecoverRoom(roomId);
-      
+
       if (!recovered) {
         return NextResponse.json(
           { error: 'Room not found. The room may have expired or never existed.' },
           { status: 404 }
         );
       }
-      
+
       console.log(`Room ${roomId} recovered successfully`);
     }
 

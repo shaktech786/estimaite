@@ -11,7 +11,10 @@ import {
   roomExists,
   getRoomData,
   getExistingParticipant,
-  createOrRecoverRoom
+  createOrRecoverRoom,
+  startVotingTimer,
+  stopVotingTimer,
+  isVotingTimerExpired
 } from '@/lib/roomManager';
 
 export async function POST(request: NextRequest) {
@@ -31,6 +34,19 @@ export async function POST(request: NextRequest) {
     }
 
     const channelName = getChannelName(roomId);
+
+    // Check if voting timer has expired and auto-reveal if needed
+    if (isVotingTimerExpired(roomId)) {
+      console.log(`Voting timer expired for room ${roomId}, auto-revealing estimates`);
+      revealEstimates(roomId);
+      const expiredRoomState = getRoomState(roomId);
+      
+      // Broadcast timer expiration
+      await pusherServer.trigger(channelName, PUSHER_EVENTS.ESTIMATES_REVEALED, {
+        roomState: expiredRoomState,
+        autoRevealed: true,
+      });
+    }
 
     switch (action) {
       case 'join': {

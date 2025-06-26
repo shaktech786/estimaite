@@ -7,8 +7,10 @@ import { ParticipantList } from '@/components/ParticipantList';
 import { StoryForm } from '@/components/StoryForm';
 import { Logo } from '@/components/Logo';
 import { RoomCodeCopy } from '@/components/RoomCodeCopy';
+import { OnboardingSteps } from '@/components/OnboardingSteps';
+import { VotingTimer } from '@/components/VotingTimer';
 import { calculateEstimationStats } from '@/lib/utils';
-import { BarChart3, Users, Eye, RotateCcw, Crown } from 'lucide-react';
+import { BarChart3, Users, Eye, RotateCcw, Crown, FileText } from 'lucide-react';
 import type { EstimationCardValue, Story, AIAnalysis } from '@/types';
 
 export default function RoomPage() {
@@ -88,7 +90,17 @@ export default function RoomPage() {
 
   const stats = roomState.revealed && roomState.estimates.length > 0
     ? calculateEstimationStats(roomState.estimates.map(e => e.estimate))
-    : null;  return (
+    : null;
+
+  // Determine current session step
+  const getCurrentStep = (): 'waiting' | 'story' | 'voting' | 'results' => {
+    if (roomState.revealed) return 'results';
+    if (roomState.currentStory) return 'voting';
+    if (roomState.participants.length === 1) return 'waiting';
+    return 'story';
+  };
+
+  const currentStep = getCurrentStep();  return (
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <header className="border-b border-gray-700 bg-gray-800 sticky top-0 z-10">
@@ -143,10 +155,38 @@ export default function RoomPage() {
           </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-4 lg:space-y-6 order-2 lg:order-1">            {/* Story Form - Only for moderators */}
-            {roomState.isModerator && (
+          <div className="lg:col-span-3 space-y-4 lg:space-y-6 order-2 lg:order-1">
+            {/* Onboarding Steps */}
+            <OnboardingSteps
+              currentStep={currentStep}
+              participantCount={roomState.participants.length}
+              isModerator={roomState.isModerator}
+            />
+
+            {/* Voting Timer */}
+            {roomState.votingTimer?.active && (
+              <VotingTimer
+                initialTime={roomState.votingTimer.remainingTime}
+                active={roomState.votingTimer.active}
+                onTimeUp={() => {
+                  if (roomState.isModerator) {
+                    actions.revealEstimates();
+                  }
+                }}
+                showControls={roomState.isModerator}
+              />
+            )}
+
+            {/* Story Form - Only for moderators when no current story */}
+            {roomState.isModerator && !roomState.currentStory && (
               <section className="bg-gray-800 border border-gray-700 rounded-lg p-4 lg:p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Submit New Story</h2>
+                <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-blue-400" />
+                  Add User Story
+                </h2>
+                <p className="text-gray-300 mb-6">
+                  Submit a user story for your team to estimate. Include clear acceptance criteria for better estimates.
+                </p>
                 <StoryForm
                   onSubmit={handleStorySubmit}
                   onAnalyze={handleStoryAnalysis}
@@ -198,18 +238,31 @@ export default function RoomPage() {
             {roomState.currentStory && (
               <section className="bg-gray-800 border border-gray-700 rounded-lg p-4 lg:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-                  <h2 className="text-lg font-semibold text-white">Your Estimate</h2>
+                  <div>
+                    <h2 className="text-lg font-semibold text-white">Your Estimate</h2>
+                    {!roomState.revealed && (
+                      <p className="text-sm text-gray-400 mt-1">
+                        {roomState.estimates.length} of {roomState.participants.length} voted
+                        {roomState.estimates.length === roomState.participants.length && ' - Ready to reveal!'}
+                      </p>
+                    )}
+                  </div>
 
                   {roomState.isModerator && (
                     <div className="flex gap-2">
                       {!roomState.revealed ? (
                         <button
                           onClick={actions.revealEstimates}
-                          className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px]"
+                          disabled={roomState.estimates.length === 0}
+                          className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
                           aria-label="Reveal all estimates"
                         >
                           <Eye className="h-4 w-4" />
-                          <span className="hidden sm:inline">Reveal</span>
+                          <span className="hidden sm:inline">
+                            {roomState.estimates.length === roomState.participants.length 
+                              ? 'Reveal All' 
+                              : `Reveal (${roomState.estimates.length})`}
+                          </span>
                         </button>
                       ) : (
                         <button

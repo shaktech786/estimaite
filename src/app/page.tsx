@@ -199,7 +199,7 @@ export default function HomePage() {
             <p className="text-gray-300 mb-6">
               Enter a room code to join an existing estimation session.
             </p>
-            
+
             <div className="bg-amber-900/20 border border-amber-700/50 rounded-lg p-3 mb-6">
               <p className="text-amber-200 text-xs">
                 💡 <strong>Note:</strong> Rooms expire after 30 minutes of inactivity for privacy and performance.
