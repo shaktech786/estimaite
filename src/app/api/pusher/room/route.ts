@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
         // Check if participant already exists in the room
         let participant = getExistingParticipant(roomId, participantName);
         const isNewParticipant = !participant;
-        
+
         if (!participant) {
           // Create new participant if doesn't exist
           participant = {

@@ -9,9 +9,9 @@ interface RoomCodeCopyProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export function RoomCodeCopy({ 
-  roomCode, 
-  className = '', 
+export function RoomCodeCopy({
+  roomCode,
+  className = '',
   showLabel = true,
   size = 'md'
 }: RoomCodeCopyProps) {
@@ -44,7 +44,7 @@ export function RoomCodeCopy({
 
   const iconSizes = {
     sm: 'h-3 w-3',
-    md: 'h-4 w-4', 
+    md: 'h-4 w-4',
     lg: 'h-5 w-5'
   };
 
@@ -65,8 +65,8 @@ export function RoomCodeCopy({
           className={cn(
             'flex items-center justify-center rounded border transition-all duration-200',
             'hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500',
-            copied 
-              ? 'bg-green-700 border-green-600 text-green-100' 
+            copied
+              ? 'bg-green-700 border-green-600 text-green-100'
               : 'bg-gray-800 border-gray-600 text-gray-300',
             sizeClasses[size]
           )}

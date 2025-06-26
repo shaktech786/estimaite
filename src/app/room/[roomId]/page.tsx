@@ -99,10 +99,10 @@ export default function RoomPage() {
               <Logo size="md" className="hidden lg:flex" />
               <div className="border-l border-gray-600 pl-3 lg:pl-4 min-w-0">
                 <h1 className="text-lg lg:text-xl font-semibold text-white truncate">Room: {roomId}</h1>
-                <RoomCodeCopy 
-                  roomCode={roomId} 
-                  showLabel={false} 
-                  size="sm" 
+                <RoomCodeCopy
+                  roomCode={roomId}
+                  showLabel={false}
+                  size="sm"
                   className="mt-1"
                 />
                 <p className="text-xs lg:text-sm text-gray-300 truncate">Welcome, {participantName}</p>

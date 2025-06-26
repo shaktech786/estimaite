@@ -176,7 +176,7 @@ export default function HomePage() {
                 <div className="flex items-center justify-center gap-2">
                   <span>{isCreating ? 'Creating...' : 'Create Room'}</span>
                   {!isCreating && (
-                    <KeyboardShortcutHint 
+                    <KeyboardShortcutHint
                       shortcutDisplay={createPlatformInfo.shortcutDisplay}
                       isMobile={createPlatformInfo.isMobile}
                     />
@@ -240,7 +240,7 @@ export default function HomePage() {
                 <div className="flex items-center justify-center gap-2">
                   <span>{isJoining ? 'Joining...' : 'Join Room'}</span>
                   {!isJoining && (
-                    <KeyboardShortcutHint 
+                    <KeyboardShortcutHint
                       shortcutDisplay={joinPlatformInfo.shortcutDisplay}
                       isMobile={joinPlatformInfo.isMobile}
                     />

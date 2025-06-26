@@ -74,8 +74,8 @@ export function Logo({ size = 'md', className = '', iconOnly = false, clickable 
   }
 
   return (
-    <Link 
-      href="/" 
+    <Link
+      href="/"
       className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
       title="Go to home page"
     >

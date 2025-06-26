@@ -25,7 +25,7 @@ export function useKeyboardShortcuts({ onSubmit, enabled = true }: UseKeyboardSh
     const userAgent = navigator.userAgent.toLowerCase();
     const isMac = /mac|iphone|ipad|ipod/.test(userAgent);
     const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
-    
+
     setPlatformInfo({
       isMac,
       isMobile,
@@ -38,7 +38,7 @@ export function useKeyboardShortcuts({ onSubmit, enabled = true }: UseKeyboardSh
     if (!enabled || !onSubmit) return;
 
     const isModifierPressed = platformInfo.isMac ? event.metaKey : event.ctrlKey;
-    
+
     if (isModifierPressed && event.key === 'Enter') {
       event.preventDefault();
       onSubmit();

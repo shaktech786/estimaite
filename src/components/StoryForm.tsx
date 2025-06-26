@@ -270,7 +270,7 @@ export function StoryForm({
       >
         <div className="flex items-center justify-center gap-2">
           <span>Submit Story for Estimation</span>
-          <KeyboardShortcutHint 
+          <KeyboardShortcutHint
             shortcutDisplay={platformInfo.shortcutDisplay}
             isMobile={platformInfo.isMobile}
           />

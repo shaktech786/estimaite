@@ -6,10 +6,10 @@ interface KeyboardShortcutHintProps {
   className?: string;
 }
 
-export function KeyboardShortcutHint({ 
-  shortcutDisplay, 
-  isMobile, 
-  className = '' 
+export function KeyboardShortcutHint({
+  shortcutDisplay,
+  isMobile,
+  className = ''
 }: KeyboardShortcutHintProps) {
   if (isMobile) return null;
 

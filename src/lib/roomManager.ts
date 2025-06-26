@@ -93,7 +93,7 @@ export function addParticipant(roomId: string, participant: Participant): boolea
   // Check if participant already exists by name to prevent duplicates
   const existingParticipant = Array.from(room.participants.values())
     .find(p => p.name.toLowerCase() === participant.name.toLowerCase());
-  
+
   if (existingParticipant) {
     // Update existing participant instead of creating duplicate
     existingParticipant.isReady = false;

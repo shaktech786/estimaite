@@ -24,10 +24,10 @@ export function ParticipantList({
       {/* Room Info */}
       {roomId && (
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-3">
-          <RoomCodeCopy 
-            roomCode={roomId} 
-            showLabel={true} 
-            size="sm" 
+          <RoomCodeCopy
+            roomCode={roomId}
+            showLabel={true}
+            size="sm"
             className="justify-center"
           />
         </div>
