@@ -7,6 +7,7 @@ import { Logo } from '@/components/Logo';
 import { BrandName } from '@/components/BrandName';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { KeyboardShortcutHint } from '@/components/KeyboardShortcutHint';
+import { FeedbackButton } from '@/components/FeedbackButton';
 
 export default function HomePage() {
   const router = useRouter();
@@ -299,12 +300,31 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-gray-700 mt-12 lg:mt-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 text-center">
-          <p className="text-sm text-gray-400">
-            Built with Next.js, powered by AI. No data stored, sessions expire automatically.
-          </p>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <p className="text-sm text-gray-400 text-center sm:text-left">
+              © 2025 <BrandName variant="dark" />. All rights reserved. No data stored, sessions expire automatically.
+            </p>
+            <div className="flex justify-center sm:justify-end items-center gap-x-6">
+              <a
+                href="/terms"
+                className="text-sm text-gray-400 hover:text-gray-300 transition-colors underline-offset-4 hover:underline"
+              >
+                Terms of Service
+              </a>
+              <a
+                href="/privacy"
+                className="text-sm text-gray-400 hover:text-gray-300 transition-colors underline-offset-4 hover:underline"
+              >
+                Privacy Policy
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
+
+      {/* Floating Feedback Button */}
+      <FeedbackButton variant="floating" />
     </div>
   );
 }
