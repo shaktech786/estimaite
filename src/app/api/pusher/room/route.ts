@@ -12,8 +12,6 @@ import {
   getRoomData,
   getExistingParticipant,
   createOrRecoverRoom,
-  startVotingTimer,
-  stopVotingTimer,
   isVotingTimerExpired
 } from '@/lib/roomManager';
 
