@@ -177,8 +177,8 @@ export async function sendFeedbackEmail(feedbackData: FeedbackEmailData) {
     });
 
     return {
-      success: true,
-      messageId: result.data?.id,
+      success: result.success,
+      messageId: result.id,
       error: result.error
     };
 

@@ -31,8 +31,8 @@ describe('roomManager', () => {
     it('should create a room and return a room ID', () => {
       const newRoomId = createRoom('New Test Room')
       expect(newRoomId).toBeTruthy()
-      expect(newRoomId).toHaveLength(4) // 4-digit room codes
-      expect(/^\d{4}$/.test(newRoomId)).toBe(true) // Verify numeric format
+      expect(newRoomId).toHaveLength(4) // 4-character room codes
+      expect(/^[A-Z0-9]{4}$/.test(newRoomId)).toBe(true) // Verify alphanumeric format
       expect(roomExists(newRoomId)).toBe(true)
     })
   })

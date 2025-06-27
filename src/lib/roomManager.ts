@@ -32,11 +32,12 @@ function cleanupExpiredRooms() {
 }
 
 export function generateRoomId(): string {
-  // Generate 4-digit numeric room code for easier joining
-  const digits = '0123456789';
+  // Generate 4-character alphanumeric room code (uppercase letters and numbers)
+  // Excluding ambiguous characters like O/0, I/1, etc. for better readability
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let result = '';
   for (let i = 0; i < 4; i++) {
-    result += digits.charAt(Math.floor(Math.random() * digits.length));
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
 }

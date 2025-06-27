@@ -45,9 +45,16 @@ export default function HomePage() {
     e.preventDefault();
     if (!roomCode.trim()) return;
 
+    // Validate room code format (4 alphanumeric characters)
+    const formattedRoomCode = roomCode.trim().toUpperCase();
+    if (!/^[A-Z0-9]{4}$/.test(formattedRoomCode)) {
+      alert('Room code must be 4 characters (letters and numbers only)');
+      return;
+    }
+
     setIsJoining(true);
     try {
-      const response = await fetch(`/api/rooms?roomId=${roomCode.trim().toUpperCase()}`);
+      const response = await fetch(`/api/rooms?roomId=${formattedRoomCode}`);
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -58,7 +65,7 @@ export default function HomePage() {
         return;
       }
 
-      router.push(`/room/${roomCode.trim().toUpperCase()}?name=${encodeURIComponent(participantName || 'Anonymous')}`);
+      router.push(`/room/${formattedRoomCode}?name=${encodeURIComponent(participantName || 'Anonymous')}`);
     } catch (error) {
       console.error('Error joining room:', error);
       alert('Failed to join room. Please try again.');
@@ -232,12 +239,17 @@ export default function HomePage() {
                   type="text"
                   value={roomCode}
                   onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                  placeholder="A1B2C3D4"
+                  placeholder="A2Z9"
+                  pattern="[A-Za-z0-9]{4}"
+                  title="4 letters or numbers"
                   className="w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors font-mono text-center"
                   required
-                  maxLength={8}
-                  minLength={8}
+                  maxLength={4}
+                  minLength={4}
                 />
+                <p className="text-xs text-gray-400 mt-1">
+                  4-character code (letters and numbers)
+                </p>
               </div>
 
               <button
