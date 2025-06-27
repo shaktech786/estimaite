@@ -203,19 +203,19 @@ If you encounter issues:
 
 ### Creating a Room
 1. Enter a room name and your name on the homepage
-2. Click "Create Room" to generate a unique room code
+2. Click "Create Room" to generate a unique 4-digit room code
 3. Share the room code with your team members
 
 ### Joining a Room
-1. Enter the room code provided by another participant
+1. Enter the 4-digit room code provided by another participant
 2. Add your name and click "Join Room"
 3. Start collaborating on story estimation
 
 ### Running Estimation Sessions
 1. **Any user submits a user story** with just a title
 2. **AI analyzes the story** and provides complexity assessment and suggestions
-3. **Team members submit estimates** using the planning poker cards
-4. **Anyone can reveal estimates** when the team is ready
+3. **Team members submit estimates** using the planning poker cards (2-minute timer)
+4. **Votes automatically reveal** when everyone has voted
 5. **Discuss and re-estimate** if needed by clicking Reset
 
 ## 📝 License

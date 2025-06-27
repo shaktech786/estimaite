@@ -6,12 +6,16 @@ interface OnboardingStepsProps {
   currentStep: 'waiting' | 'story' | 'voting' | 'results';
   participantCount: number;
   className?: string;
+  roomState?: {
+    revealed?: boolean;
+  };
 }
 
 export function OnboardingSteps({
   currentStep,
   participantCount,
-  className = ''
+  className = '',
+  roomState
 }: OnboardingStepsProps) {
   const steps = [
     {
@@ -44,7 +48,7 @@ export function OnboardingSteps({
       description: 'View and discuss the estimates',
       icon: Eye,
       active: currentStep === 'results',
-      completed: false
+      completed: currentStep === 'results' && roomState?.revealed
     }
   ];
 

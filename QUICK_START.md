@@ -21,10 +21,10 @@ I want to use this for team estimation sessions where any team member can add a 
 For AI features, I'll use my OpenAI API key to analyze story complexity and provide estimation suggestions. If I don't have one, please guide me through setting up alternatives or running without AI features.
 
 After setup, I'll need to know how to:
-- Share the room code with my team members
+- Share the 4-digit room code with my team members
 - Submit a user story with just a title
 - Start the voting process
-- Reveal estimates when everyone has voted
+- See votes automatically revealed when everyone has voted
 - Reset for the next estimation round
 ```
 
@@ -77,7 +77,7 @@ Navigate to [http://localhost:3000](http://localhost:3000)
 
 ### Join an Existing Room
 
-1. Enter the 8-character room code
+1. Enter the 4-digit numeric room code
 2. Enter your name
 3. Click "Join Room"
 
@@ -86,9 +86,9 @@ Navigate to [http://localhost:3000](http://localhost:3000)
 In this collaborative environment, anyone can:
 
 1. Submit a story title or JIRA ID for estimation
-2. Start or control the voting timer
-3. Select an estimation card
-4. Reveal estimates after voting
+2. Select an estimation card (2-minute voting timer)
+3. Votes auto-reveal when everyone has voted
+4. Review the results and discussion
 5. Reset for the next estimation round
 
 The simplified flow lets everyone contribute to the estimation process without unnecessary restrictions.
@@ -99,10 +99,12 @@ The simplified flow lets everyone contribute to the estimation process without u
 - **AI Story Analysis**: Get automatic complexity assessments and recommendations
 - **Mobile-friendly**: Use on any device with a responsive interface
 - **No Account Required**: Just create or join a room to get started
+- **Auto-Reveal**: Votes automatically reveal when everyone has voted
+- **Simple Room Codes**: Easy-to-share 4-digit numeric room codes
 
 ## 🔧 Troubleshooting
 
-- **Room doesn't exist**: Double-check the room code (case sensitive)
+- **Room doesn't exist**: Double-check the room code
 - **WebSocket connection issues**: Verify Pusher credentials in .env.local
 - **AI analysis not working**: Check your OpenAI API key and rate limits
 

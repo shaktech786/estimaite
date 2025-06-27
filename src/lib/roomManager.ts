@@ -32,10 +32,11 @@ function cleanupExpiredRooms() {
 }
 
 export function generateRoomId(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  // Generate 4-digit numeric room code for easier joining
+  const digits = '0123456789';
   let result = '';
-  for (let i = 0; i < 8; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  for (let i = 0; i < 4; i++) {
+    result += digits.charAt(Math.floor(Math.random() * digits.length));
   }
   return result;
 }
@@ -163,10 +164,10 @@ export function submitStory(roomId: string, story: Story): boolean {
   room.estimates.clear();
   room.revealed = false;
 
-  // Start voting timer (5 minutes default)
+  // Start voting timer (2 minutes default)
   room.votingTimer = {
     startTime: new Date(),
-    duration: 300, // 5 minutes
+    duration: 120, // 2 minutes
     active: true,
   };
 
@@ -209,7 +210,7 @@ export function resetEstimates(roomId: string): boolean {
   if (room.currentStory) {
     room.votingTimer = {
       startTime: new Date(),
-      duration: 300, // 5 minutes
+      duration: 120, // 2 minutes
       active: true,
     };
   }
@@ -232,8 +233,8 @@ export function createOrRecoverRoom(roomId: string, roomName?: string): boolean 
     return false; // Room already exists
   }
 
-  // Validate room ID format (8 alphanumeric characters)
-  if (!/^[A-Z0-9]{8}$/.test(roomId)) {
+  // Validate room ID format (4 numeric digits)
+  if (!/^\d{4}$/.test(roomId)) {
     return false; // Invalid room ID format
   }
 

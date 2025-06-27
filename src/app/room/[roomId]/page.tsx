@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { usePusher } from '@/hooks/usePusher';
 import { EstimationCards } from '@/components/EstimationCards';
@@ -9,9 +10,9 @@ import { Logo } from '@/components/Logo';
 import { RoomCodeCopy } from '@/components/RoomCodeCopy';
 import { OnboardingSteps } from '@/components/OnboardingSteps';
 import { VotingTimer } from '@/components/VotingTimer';
-import { calculateEstimationStats } from '@/lib/utils';
 import { BarChart3, Users, Eye, RotateCcw, FileText } from 'lucide-react';
 import type { EstimationCardValue, Story, AIAnalysis } from '@/types';
+import { calculateEstimationStats, getCardColor } from '@/lib/utils';
 
 export default function RoomPage() {
   const params = useParams();
@@ -56,6 +57,26 @@ export default function RoomPage() {
       actions.submitEstimate(-1); // Use -1 to represent unknown
     }
   };
+  
+  // Auto-reveal votes when everyone has voted
+  useEffect(() => {
+    if (
+      roomState.currentStory && 
+      !roomState.revealed && 
+      roomState.estimates.length > 0 &&
+      roomState.estimates.length === roomState.participants.length
+    ) {
+      // Small delay to allow users to see that everyone has voted
+      const timer = setTimeout(() => {
+        actions.revealEstimates();
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+    
+    // Return empty cleanup function if condition isn't met
+    return () => {};
+  }, [roomState.currentStory, roomState.revealed, roomState.estimates.length, roomState.participants.length, actions]);
 
   if (roomState.loading) {
     return (
@@ -155,6 +176,7 @@ export default function RoomPage() {
             <OnboardingSteps
               currentStep={currentStep}
               participantCount={roomState.participants.length}
+              roomState={roomState}
             />
 
             {/* Voting Timer */}
@@ -244,22 +266,26 @@ export default function RoomPage() {
                     )}
                   </div>
 
-                  {/* Allow any user to reveal and reset estimates */}
+                  {/* Allow any user to reveal, end vote early, and reset estimates */}
                   <div className="flex gap-2">
                     {!roomState.revealed ? (
-                      <button
-                        onClick={actions.revealEstimates}
-                        disabled={roomState.estimates.length === 0}
-                        className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
-                        aria-label="Reveal all estimates"
-                      >
-                        <Eye className="h-4 w-4" />
-                        <span className="hidden sm:inline">
-                          {roomState.estimates.length === roomState.participants.length
-                            ? 'Reveal All'
-                            : `Reveal (${roomState.estimates.length})`}
-                        </span>
-                      </button>
+                      <>
+                        <button
+                          onClick={actions.revealEstimates}
+                          disabled={roomState.estimates.length === 0}
+                          className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+                          aria-label="Reveal all estimates"
+                        >
+                          <Eye className="h-4 w-4" />
+                          <span className="hidden sm:inline">
+                            {roomState.estimates.length === roomState.participants.length
+                              ? 'Reveal All'
+                              : `Reveal (${roomState.estimates.length})`}
+                          </span>
+                        </button>
+                        
+
+                      </>
                     ) : (
                       <button
                         onClick={actions.resetEstimates}
@@ -283,30 +309,94 @@ export default function RoomPage() {
                 {roomState.revealed && stats && (
                   <div className="mt-6 p-4 bg-gray-700 rounded-lg border border-gray-600">
                     <h3 className="font-medium text-white mb-3">Estimation Results</h3>
+                    
+                    {/* Distribution bar chart */}
+                    <div className="mb-4">
+                      <h4 className="text-sm text-gray-300 mb-2">Vote Distribution</h4>
+                      <div className="flex items-end h-24 gap-1">
+                        {(() => {
+                          // Create histogram of votes
+                          const histogram: Record<number, number> = {};
+                          roomState.estimates.forEach(e => {
+                            const val = e.estimate;
+                            histogram[val] = (histogram[val] || 0) + 1;
+                          });
+                          
+                          const uniqueValues = [...new Set(roomState.estimates.map(e => e.estimate))].sort((a, b) => a - b);
+                          const maxCount = Math.max(...Object.values(histogram));
+                          
+                          return uniqueValues.map(value => (
+                            <div key={value} className="flex flex-col items-center flex-1">
+                              <div 
+                                className={`w-full ${getCardColor(value).replace('from-', 'bg-')}`}
+                                style={{ 
+                                  height: `${((histogram[value] || 0) / maxCount) * 100}%`, 
+                                  minHeight: '20px' 
+                                }}
+                              >
+                                <div className="h-full bg-opacity-70 rounded-t-sm"></div>
+                              </div>
+                              <div className="text-xs font-medium text-white mt-1">{value}</div>
+                              <div className="text-xs text-gray-400">{histogram[value]}</div>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                    </div>
+                    
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
-                        <span className="text-gray-300">Min:</span>
-                        <span className="ml-2 font-medium text-white">{stats.min}</span>
+                        <span className="text-gray-300">Most Common:</span>
+                        <span className="ml-2 font-medium text-white">
+                          {(() => {
+                            // Find mode (most common value)
+                            const histogram: Record<number, number> = {};
+                            roomState.estimates.forEach(e => {
+                              const val = e.estimate;
+                              histogram[val] = (histogram[val] || 0) + 1;
+                            });
+                            
+                            let mode = -1;
+                            let maxCount = 0;
+                            Object.entries(histogram).forEach(([val, count]) => {
+                              if (count > maxCount) {
+                                maxCount = count;
+                                mode = parseInt(val);
+                              }
+                            });
+                            return mode;
+                          })()}
+                        </span>
                       </div>
                       <div>
-                        <span className="text-gray-300">Max:</span>
-                        <span className="ml-2 font-medium text-white">{stats.max}</span>
+                        <span className="text-gray-300">Median:</span>
+                        <span className="ml-2 font-medium text-white">{stats.median}</span>
                       </div>
                       <div>
                         <span className="text-gray-300">Average:</span>
                         <span className="ml-2 font-medium text-white">{stats.average}</span>
                       </div>
                       <div>
-                        <span className="text-gray-300">Median:</span>
-                        <span className="ml-2 font-medium text-white">{stats.median}</span>
+                        <span className="text-gray-300">Range:</span>
+                        <span className="ml-2 font-medium text-white">{stats.min} - {stats.max}</span>
                       </div>
                     </div>
-                    {stats.consensus && (
+                    
+                    {stats.consensus ? (
                       <div className="mt-3 p-3 bg-green-900/20 border border-green-800 rounded-lg">
                         <p className="text-green-200 font-medium flex items-center gap-2">
-                          🎉 Consensus reached!
+                          🎉 Perfect consensus reached!
                         </p>
                       </div>
+                    ) : (
+                      roomState.estimates.length >= 2 && 
+                      ((stats.max - stats.min) / stats.max < 0.5) && (
+                        <div className="mt-3 p-3 bg-blue-900/20 border border-blue-800 rounded-lg">
+                          <p className="text-blue-200 font-medium flex items-center gap-2">
+                            ✓ Strong agreement (low variance)
+                          </p>
+                        </div>
+                      )
                     )}
                   </div>
                 )}
