@@ -7,6 +7,7 @@ import {
   submitEstimate,
   revealEstimates,
   resetEstimates,
+  clearStoryAndReset,
   getRoomState,
   roomExists,
   getRoomData,
@@ -290,6 +291,26 @@ export async function POST(request: NextRequest) {
         const roomState = getRoomState(roomId);
 
         // Broadcast estimates reset
+        await pusherServer.trigger(channelName, PUSHER_EVENTS.ESTIMATES_RESET, {
+          roomState,
+        });
+
+        return NextResponse.json({ success: true });
+      }
+
+      case 'clear-story-and-reset': {
+        // Anyone can clear story and start fresh
+        const success = clearStoryAndReset(roomId);
+        if (!success) {
+          return NextResponse.json(
+            { error: 'Failed to clear story and reset' },
+            { status: 500 }
+          );
+        }
+
+        const roomState = getRoomState(roomId);
+
+        // Broadcast story cleared and reset
         await pusherServer.trigger(channelName, PUSHER_EVENTS.ESTIMATES_RESET, {
           roomState,
         });

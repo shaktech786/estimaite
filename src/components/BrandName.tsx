@@ -1,11 +1,12 @@
-import React from 'react';
+import { BrandName as ShakUIBrandName } from '@shakgpt/ui';
 
 interface BrandNameProps {
   className?: string;
   variant?: 'default' | 'light' | 'dark';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export function BrandName({ className = '', variant = 'default' }: BrandNameProps) {
+export function BrandName({ className = '', variant = 'default', size = 'md' }: BrandNameProps) {
   const getColors = () => {
     switch (variant) {
       case 'light':
@@ -29,10 +30,12 @@ export function BrandName({ className = '', variant = 'default' }: BrandNameProp
   const colors = getColors();
 
   return (
-    <span className={className}>
-      <span className={colors.text}>estim</span>
-      <span className={colors.ai}>AI</span>
-      <span className={colors.text}>te</span>
-    </span>
+    <ShakUIBrandName
+      name="estimAIte"
+      aiText="AI"
+      colors={colors}
+      size={size}
+      className={className}
+    />
   );
 }

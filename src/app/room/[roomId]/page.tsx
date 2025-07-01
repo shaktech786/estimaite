@@ -287,14 +287,24 @@ export default function RoomPage() {
 
                       </>
                     ) : (
-                      <button
-                        onClick={actions.resetEstimates}
-                        className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px]"
-                        aria-label="Reset estimates for new round"
-                      >
-                        <RotateCcw className="h-4 w-4" />
-                        <span className="hidden sm:inline">Reset</span>
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={actions.resetEstimates}
+                          className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px]"
+                          aria-label="Reset estimates for new round"
+                        >
+                          <RotateCcw className="h-4 w-4" />
+                          <span className="hidden sm:inline">Reset</span>
+                        </button>
+                        <button
+                          onClick={actions.clearStoryAndReset}
+                          className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px]"
+                          aria-label="Start new story estimation"
+                        >
+                          <FileText className="h-4 w-4" />
+                          <span className="hidden sm:inline">New Story</span>
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>

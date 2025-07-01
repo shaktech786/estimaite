@@ -220,6 +220,24 @@ export function resetEstimates(roomId: string): boolean {
   return true;
 }
 
+export function clearStoryAndReset(roomId: string): boolean {
+  const room = rooms.get(roomId);
+  if (!room) return false;
+
+  // Clear everything for a fresh start
+  room.currentStory = undefined;
+  room.estimates.clear();
+  room.revealed = false;
+  
+  // Stop any active voting timer
+  if (room.votingTimer) {
+    room.votingTimer.active = false;
+  }
+
+  room.lastActivity = new Date();
+  return true;
+}
+
 export function roomExists(roomId: string): boolean {
   cleanupExpiredRooms(); // Clean up expired rooms before checking
   const exists = rooms.has(roomId);

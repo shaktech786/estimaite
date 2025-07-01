@@ -260,6 +260,34 @@ export function usePusher(roomId?: string, participantName?: string) {
         console.error('Failed to reset estimates:', error);
       }
     },
+
+    clearStoryAndReset: async () => {
+      if (!participantRef.current) return;
+
+      try {
+        setRoomState(prev => ({
+          ...prev,
+          selectedEstimate: -1,
+        }));
+
+        const response = await fetch('/api/pusher/room', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'clear-story-and-reset',
+            roomId,
+            participantId: participantRef.current.id,
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to clear story and reset');
+        }
+      } catch (error) {
+        console.error('Failed to clear story and reset:', error);
+      }
+    },
   };
 
   return { roomState, actions };

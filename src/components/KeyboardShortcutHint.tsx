@@ -1,4 +1,4 @@
-import React from 'react';
+import { KeyboardShortcutHint as ShakUIKeyboardShortcutHint } from '@shakgpt/ui';
 
 interface KeyboardShortcutHintProps {
   shortcutDisplay: string;
@@ -11,11 +11,12 @@ export function KeyboardShortcutHint({
   isMobile,
   className = ''
 }: KeyboardShortcutHintProps) {
-  if (isMobile) return null;
-
   return (
-    <span className={`text-xs text-gray-400 ${className}`}>
-      {shortcutDisplay}
-    </span>
+    <ShakUIKeyboardShortcutHint
+      shortcut={shortcutDisplay}
+      className={className}
+      showOnMobile={!isMobile}
+      variant="subtle"
+    />
   );
 }

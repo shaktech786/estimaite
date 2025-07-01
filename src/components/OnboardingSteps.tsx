@@ -1,120 +1,54 @@
 import React from 'react';
-import { Users, FileText, Timer, Eye } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import type { RoomState } from '@/types';
 
 interface OnboardingStepsProps {
   currentStep: 'waiting' | 'story' | 'voting' | 'results';
   participantCount: number;
-  className?: string;
-  roomState?: {
-    revealed?: boolean;
-  };
+  roomState: RoomState;
 }
 
-export function OnboardingSteps({
-  currentStep,
-  participantCount,
-  className = '',
-  roomState
-}: OnboardingStepsProps) {
+export function OnboardingSteps({ currentStep, participantCount, roomState }: OnboardingStepsProps) {
   const steps = [
-    {
-      id: 'waiting',
-      title: 'Invite Team',
-      description: 'Share the room code with your team members',
-      icon: Users,
-      active: currentStep === 'waiting',
-      completed: participantCount > 1 || currentStep !== 'waiting'
-    },
-    {
-      id: 'story',
-      title: 'Add Story',
-      description: 'Submit a user story to estimate',
-      icon: FileText,
-      active: currentStep === 'story',
-      completed: currentStep === 'voting' || currentStep === 'results'
-    },
-    {
-      id: 'voting',
-      title: 'Vote',
-      description: 'Everyone selects their estimate',
-      icon: Timer,
-      active: currentStep === 'voting',
-      completed: currentStep === 'results'
-    },
-    {
-      id: 'results',
-      title: 'Results',
-      description: 'View and discuss the estimates',
-      icon: Eye,
-      active: currentStep === 'results',
-      completed: currentStep === 'results' && roomState?.revealed
-    }
+    { id: 'waiting', label: 'Waiting for participants', completed: participantCount > 0 },
+    { id: 'story', label: 'Submit story', completed: !!roomState.currentStory },
+    { id: 'voting', label: 'Vote on estimates', completed: roomState.revealed },
+    { id: 'results', label: 'View results', completed: roomState.revealed },
   ];
 
   return (
-    <div className={cn('bg-blue-900/20 border border-blue-800 rounded-lg p-4', className)}>
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 bg-blue-900/30 rounded-lg flex items-center justify-center">
-          <FileText className="h-4 w-4 text-blue-400" />
-        </div>
-        <h3 className="font-medium text-blue-100">
-          Planning Poker Guide
-        </h3>
-      </div>
-
-      <div className="space-y-3">
-        {steps.map((step) => (
-          <div key={step.id} className="flex items-start gap-3">
-            <div className={cn(
-              'w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
-              step.completed
-                ? 'bg-green-600 text-white'
-                : step.active
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-700 text-gray-400'
-            )}>
-              {step.completed ? (
-                '✓'
-              ) : (
-                <step.icon className="h-3 w-3" />
-              )}
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <h4 className={cn(
-                'text-sm font-medium',
+    <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+      <h2 className="text-sm font-medium text-gray-300 mb-3">Session Progress</h2>
+      <div className="flex items-center space-x-4">
+        {steps.map((step, index) => (
+          <div key={step.id} className="flex items-center">
+            <div
+              className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
                 step.completed
-                  ? 'text-green-200'
-                  : step.active
-                  ? 'text-blue-200'
+                  ? 'bg-green-600 text-white'
+                  : currentStep === step.id
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-600 text-gray-300'
+              }`}
+            >
+              {index + 1}
+            </div>
+            <span
+              className={`ml-2 text-sm ${
+                step.completed
+                  ? 'text-green-400'
+                  : currentStep === step.id
+                  ? 'text-blue-400'
                   : 'text-gray-400'
-              )}>
-                {step.title}
-                {step.id === 'waiting' && ` (${participantCount} ${participantCount === 1 ? 'person' : 'people'})`}
-              </h4>
-              <p className={cn(
-                'text-xs mt-0.5',
-                step.completed
-                  ? 'text-green-300'
-                  : step.active
-                  ? 'text-blue-300'
-                  : 'text-gray-500'
-              )}>
-                {step.description}
-              </p>
-            </div>
+              }`}
+            >
+              {step.label}
+            </span>
+            {index < steps.length - 1 && (
+              <div className="ml-4 w-6 h-px bg-gray-600"></div>
+            )}
           </div>
         ))}
       </div>
-
-      {currentStep === 'waiting' && participantCount === 1 && (
-        <div className="mt-4 p-3 bg-amber-900/20 border border-amber-700/50 rounded-lg">
-          <p className="text-amber-200 text-xs">
-            💡 <strong>Tip:</strong> Planning poker works best with 3-8 team members. Share your room code to get started!
-          </p>
-        </div>
-      )}
     </div>
   );
 }
