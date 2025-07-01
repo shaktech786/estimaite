@@ -1,8 +1,8 @@
-# EstimAIte - AI-Enhanced Planning Poker
+# EstimAIte
 
-> Modern planning poker with AI analysis for agile teams
+AI-enhanced planning poker for agile teams. Real-time collaboration with intelligent story analysis.
 
-## 🚀 Quick Start
+## Quick Setup
 
 ```bash
 npm install
@@ -12,35 +12,10 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
-## ✨ Features
+## Deploy
 
-- **🤖 AI Story Analysis** - Get complexity insights and estimation suggestions
-- **⚡ Real-time Collaboration** - WebSocket-powered live sessions  
-- **🔒 Privacy-First** - No data storage, temporary sessions only
-- **📱 Mobile-Ready** - Responsive design with touch support
-- **♿ Accessible** - Full keyboard navigation and screen reader support
+Vercel-ready. Connect repository and add environment variables.
 
-## 🛠 Development
-
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production  
-npm run type-check   # TypeScript validation
-npm run lint         # Code quality check
-```
-
-## 🏗 Tech Stack
-
-**Framework**: Next.js 15 + TypeScript  
-**UI**: ShakUI component library + Tailwind CSS  
-**Real-time**: Pusher WebSockets  
-**AI**: OpenAI API integration  
-**Deployment**: Vercel-ready
-
-## 📚 More Info
-
-For creating similar projects, see the [bootstrap prompt](../shakgpt/PROJECT_BOOTSTRAP_PROMPT.md)
-
-## 📄 License
+---
 
 MIT © ShakGPT

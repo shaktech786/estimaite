@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { usePusher } from '@/hooks/usePusher';
 import { EstimationCards } from '@/components/EstimationCards';
@@ -10,7 +10,7 @@ import { Logo } from '@/components/Logo';
 import { RoomCodeCopy } from '@/components/RoomCodeCopy';
 import { OnboardingSteps } from '@/components/OnboardingSteps';
 import { VotingTimer } from '@/components/VotingTimer';
-import { BarChart3, Users, Eye, RotateCcw, FileText } from 'lucide-react';
+import { BarChart3, Users, Eye, RotateCcw, FileText, X } from 'lucide-react';
 import type { EstimationCardValue, Story, AIAnalysis } from '@/types';
 import { calculateEstimationStats, getCardColor } from '@/lib/utils';
 
@@ -21,6 +21,10 @@ export default function RoomPage() {
   const participantName = searchParams?.get('name') || 'Anonymous';
 
   const { roomState, actions } = usePusher(roomId, participantName);
+
+  // State for new story modal
+  const [showNewStoryModal, setShowNewStoryModal] = useState(false);
+  const [newStoryTitle, setNewStoryTitle] = useState('');
 
   // AI Analysis function
   const handleStoryAnalysis = async (story: Omit<Story, 'aiAnalysis'>): Promise<AIAnalysis> => {
@@ -56,6 +60,34 @@ export default function RoomPage() {
     } else if (value === '?') {
       actions.submitEstimate(-1); // Use -1 to represent unknown
     }
+  };
+
+  // Handler for new story with title prompt
+  const handleNewStory = () => {
+    setShowNewStoryModal(true);
+  };
+
+  const handleNewStorySubmit = () => {
+    if (newStoryTitle.trim()) {
+      // Clear current story and reset
+      actions.clearStoryAndReset();
+
+      // Submit new story with the provided title
+      actions.submitStory({
+        title: newStoryTitle.trim(),
+        description: '',
+        acceptanceCriteria: [],
+      });
+
+      // Close modal and reset form
+      setShowNewStoryModal(false);
+      setNewStoryTitle('');
+    }
+  };
+
+  const handleNewStoryCancel = () => {
+    setShowNewStoryModal(false);
+    setNewStoryTitle('');
   };
 
   // Auto-reveal votes when everyone has voted
@@ -297,7 +329,7 @@ export default function RoomPage() {
                           <span className="hidden sm:inline">Reset</span>
                         </button>
                         <button
-                          onClick={actions.clearStoryAndReset}
+                          onClick={handleNewStory}
                           className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px]"
                           aria-label="Start new story estimation"
                         >
@@ -415,6 +447,64 @@ export default function RoomPage() {
           </div>
         </div>
       </main>
+
+      {/* New Story Modal */}
+      {showNewStoryModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">New Story</h3>
+              <button
+                onClick={handleNewStoryCancel}
+                className="text-gray-400 hover:text-white p-1 rounded"
+                aria-label="Close modal"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="story-title" className="block text-sm font-medium text-gray-300 mb-2">
+                  Story Title
+                </label>
+                <input
+                  id="story-title"
+                  type="text"
+                  value={newStoryTitle}
+                  onChange={(e) => setNewStoryTitle(e.target.value)}
+                  placeholder="Enter story title or JIRA ID"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newStoryTitle.trim()) {
+                      handleNewStorySubmit();
+                    } else if (e.key === 'Escape') {
+                      handleNewStoryCancel();
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={handleNewStoryCancel}
+                  className="px-4 py-2 text-gray-300 hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleNewStorySubmit}
+                  disabled={!newStoryTitle.trim()}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Create Story
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
