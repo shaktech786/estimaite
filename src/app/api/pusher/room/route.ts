@@ -73,10 +73,10 @@ export async function POST(request: NextRequest) {
 
         if (!participant) {
           console.log(`Creating new participant for session ${sessionId}`);
-          
+
           // DEFENSIVE CHECK: Make sure we're not accidentally overriding someone
           // Check if there's already a participant with the same name but different session
-          const existingWithSameName = currentRoomState?.participants.find(p => 
+          const existingWithSameName = currentRoomState?.participants.find(p =>
             p.name === participantName && p.sessionId !== sessionId
           );
           if (existingWithSameName) {
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
             console.log(`  New: session=${sessionId}`);
             console.log(`  This should create a separate participant, not override!`);
           }
-          
+
           // Create new participant for new session
           participant = {
             id: `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
         roomState?.participants.forEach((p, index) => {
           console.log(`    Participant ${index + 1}: id=${p.id}, name=${p.name}, session=${p.sessionId}`);
         });
-        
+
         // Verify our participant is in the room
         const addedParticipant = roomState?.participants.find(p => p.id === participant.id);
         if (!addedParticipant) {
@@ -210,7 +210,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Any user can submit stories - no need to check moderator status
-        
+
         const success = submitStory(roomId, story);
         if (!success) {
           return NextResponse.json(

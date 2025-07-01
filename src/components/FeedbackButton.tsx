@@ -1,6 +1,6 @@
 'use client';
 
-import { FeedbackButton as ShakUIFeedbackButton } from '@shakgpt/ui';
+import { FeedbackButton as ShakUIFeedbackButton } from 'shakui';
 
 interface FeedbackButtonProps {
   variant?: 'floating' | 'inline';

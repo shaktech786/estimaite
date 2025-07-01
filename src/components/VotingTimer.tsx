@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { VotingTimer as ShakUIVotingTimer } from '@shakgpt/ui';
+import { VotingTimer as ShakUIVotingTimer } from 'shakui';
 
 interface VotingTimerProps {
   initialTime: number; // in seconds

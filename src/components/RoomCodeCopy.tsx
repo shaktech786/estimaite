@@ -1,5 +1,5 @@
 'use client';
-import { RoomCodeCopy as ShakUIRoomCodeCopy } from '@shakgpt/ui';
+import { RoomCodeCopy as ShakUIRoomCodeCopy } from 'shakui';
 
 interface RoomCodeCopyProps {
   roomCode: string;

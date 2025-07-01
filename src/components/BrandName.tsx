@@ -1,6 +1,6 @@
 'use client';
 
-import { BrandName as ShakUIBrandName } from '@shakgpt/ui';
+import { BrandName as ShakUIBrandName } from 'shakui';
 
 interface BrandNameProps {
   className?: string;

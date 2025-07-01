@@ -1,5 +1,5 @@
 'use client';
-import { Logo as ShakUILogo } from '@shakgpt/ui';
+import { cn } from '@/lib/utils';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
@@ -8,18 +8,41 @@ interface LogoProps {
   clickable?: boolean;
 }
 
-export function Logo(props: LogoProps) {
+export function Logo({
+  size = 'md',
+  className = '',
+  iconOnly = false,
+  clickable = false
+}: LogoProps) {
+  const sizeClasses = {
+    sm: 'text-lg',
+    md: 'text-xl',
+    lg: 'text-2xl'
+  };
+
+  const Component = clickable ? 'button' : 'div';
+
   return (
-    <ShakUILogo
-      {...props}
-      brand={{
-        name: 'estimAIte',
-        aiText: 'AI',
-        colors: {
-          text: 'text-white',
-          ai: 'text-cyan-400'
-        }
-      }}
-    />
+    <Component
+      className={cn(
+        'flex items-center gap-2 font-bold',
+        sizeClasses[size],
+        clickable && 'cursor-pointer hover:opacity-80 transition-opacity',
+        className
+      )}
+    >
+      {/* Poker chip icon */}
+      <div className="relative">
+        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full flex items-center justify-center">
+          <div className="w-3 h-3 bg-white rounded-full"></div>
+        </div>
+      </div>
+
+      {!iconOnly && (
+        <span className="text-white">
+          estim<span className="text-cyan-400">AI</span>te
+        </span>
+      )}
+    </Component>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { FeedbackModal as ShakUIFeedbackModal } from '@shakgpt/ui';
+import { FeedbackModal as ShakUIFeedbackModal } from 'shakui';
 
 interface FeedbackModalProps {
   isOpen: boolean;

@@ -228,7 +228,7 @@ export function clearStoryAndReset(roomId: string): boolean {
   room.currentStory = undefined;
   room.estimates.clear();
   room.revealed = false;
-  
+
   // Stop any active voting timer
   if (room.votingTimer) {
     room.votingTimer.active = false;

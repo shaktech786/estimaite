@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { StoryForm as ShakUIStoryForm, type StoryFormData, type AIAnalysis } from '@shakgpt/ui';
+import { StoryForm as ShakUIStoryForm, type StoryFormData, type AIAnalysis } from 'shakui';
 import type { Story, AIAnalysis as EstimAIteAIAnalysis } from '@/types';
 
 interface StoryFormProps {
@@ -41,10 +41,10 @@ export function StoryForm({
     };
 
     const estimAIteAnalysis = await onAnalyze(estimAIteStory);
-    
-    // Convert EstimAIte AIAnalysis to ShakUI format  
+
+    // Convert EstimAIte AIAnalysis to ShakUI format
     const shakUIAnalysis: AIAnalysis = {
-      complexity: estimAIteAnalysis.complexity === 'low' ? 'simple' : 
+      complexity: estimAIteAnalysis.complexity === 'low' ? 'simple' :
                   estimAIteAnalysis.complexity === 'high' ? 'complex' : 'medium',
       suggestedPoints: (estimAIteAnalysis.suggestedPoints?.[0] as number) || 3 // Take first suggested point
     };

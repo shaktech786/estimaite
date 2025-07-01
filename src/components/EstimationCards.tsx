@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { EstimationCards as ShakUIEstimationCards, type EstimationValue, type EstimationCard } from '@shakgpt/ui';
+import { EstimationCards as ShakUIEstimationCards, type EstimationValue, type EstimationCard } from 'shakui';
 import { type EstimationCardValue, ESTIMATION_CARDS } from '@/types';
 
 interface EstimationCardsProps {

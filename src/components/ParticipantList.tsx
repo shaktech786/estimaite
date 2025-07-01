@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { ParticipantList as ShakUIParticipantList, type Participant as ShakUIParticipant } from '@shakgpt/ui';
+import { ParticipantList as ShakUIParticipantList, type Participant as ShakUIParticipant } from 'shakui';
 import { RoomCodeCopy } from '@/components/RoomCodeCopy';
 import type { Participant } from '@/types';
 

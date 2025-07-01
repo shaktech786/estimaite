@@ -57,12 +57,12 @@ export default function RoomPage() {
       actions.submitEstimate(-1); // Use -1 to represent unknown
     }
   };
-  
+
   // Auto-reveal votes when everyone has voted
   useEffect(() => {
     if (
-      roomState.currentStory && 
-      !roomState.revealed && 
+      roomState.currentStory &&
+      !roomState.revealed &&
       roomState.estimates.length > 0 &&
       roomState.estimates.length === roomState.participants.length
     ) {
@@ -70,10 +70,10 @@ export default function RoomPage() {
       const timer = setTimeout(() => {
         actions.revealEstimates();
       }, 1500);
-      
+
       return () => clearTimeout(timer);
     }
-    
+
     // Return empty cleanup function if condition isn't met
     return () => {};
   }, [roomState.currentStory, roomState.revealed, roomState.estimates.length, roomState.participants.length, actions]);
@@ -283,7 +283,7 @@ export default function RoomPage() {
                               : `Reveal (${roomState.estimates.length})`}
                           </span>
                         </button>
-                        
+
 
                       </>
                     ) : (
@@ -319,7 +319,7 @@ export default function RoomPage() {
                 {roomState.revealed && stats && (
                   <div className="mt-6 p-4 bg-gray-700 rounded-lg border border-gray-600">
                     <h3 className="font-medium text-white mb-3">Estimation Results</h3>
-                    
+
                     {/* Distribution bar chart */}
                     <div className="mb-4">
                       <h4 className="text-sm text-gray-300 mb-2">Vote Distribution</h4>
@@ -331,17 +331,17 @@ export default function RoomPage() {
                             const val = e.estimate;
                             histogram[val] = (histogram[val] || 0) + 1;
                           });
-                          
+
                           const uniqueValues = [...new Set(roomState.estimates.map(e => e.estimate))].sort((a, b) => a - b);
                           const maxCount = Math.max(...Object.values(histogram));
-                          
+
                           return uniqueValues.map(value => (
                             <div key={value} className="flex flex-col items-center flex-1">
-                              <div 
+                              <div
                                 className={`w-full ${getCardColor(value).replace('from-', 'bg-')}`}
-                                style={{ 
-                                  height: `${((histogram[value] || 0) / maxCount) * 100}%`, 
-                                  minHeight: '20px' 
+                                style={{
+                                  height: `${((histogram[value] || 0) / maxCount) * 100}%`,
+                                  minHeight: '20px'
                                 }}
                               >
                                 <div className="h-full bg-opacity-70 rounded-t-sm"></div>
@@ -353,7 +353,7 @@ export default function RoomPage() {
                         })()}
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
                         <span className="text-gray-300">Most Common:</span>
@@ -365,7 +365,7 @@ export default function RoomPage() {
                               const val = e.estimate;
                               histogram[val] = (histogram[val] || 0) + 1;
                             });
-                            
+
                             let mode = -1;
                             let maxCount = 0;
                             Object.entries(histogram).forEach(([val, count]) => {
@@ -391,7 +391,7 @@ export default function RoomPage() {
                         <span className="ml-2 font-medium text-white">{stats.min} - {stats.max}</span>
                       </div>
                     </div>
-                    
+
                     {stats.consensus ? (
                       <div className="mt-3 p-3 bg-green-900/20 border border-green-800 rounded-lg">
                         <p className="text-green-200 font-medium flex items-center gap-2">
@@ -399,7 +399,7 @@ export default function RoomPage() {
                         </p>
                       </div>
                     ) : (
-                      roomState.estimates.length >= 2 && 
+                      roomState.estimates.length >= 2 &&
                       ((stats.max - stats.min) / stats.max < 0.5) && (
                         <div className="mt-3 p-3 bg-blue-900/20 border border-blue-800 rounded-lg">
                           <p className="text-blue-200 font-medium flex items-center gap-2">
