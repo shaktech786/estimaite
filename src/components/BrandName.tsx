@@ -1,3 +1,5 @@
+'use client';
+
 import { BrandName as ShakUIBrandName } from '@shakgpt/ui';
 
 interface BrandNameProps {

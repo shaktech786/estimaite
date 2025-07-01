@@ -1,3 +1,4 @@
+'use client';
 import { Logo as ShakUILogo } from '@shakgpt/ui';
 
 interface LogoProps {

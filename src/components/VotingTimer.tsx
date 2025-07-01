@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { VotingTimer as ShakUIVotingTimer } from '@shakgpt/ui';
 

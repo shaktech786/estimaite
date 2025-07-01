@@ -1,3 +1,4 @@
+'use client';
 import { RoomCodeCopy as ShakUIRoomCodeCopy } from '@shakgpt/ui';
 
 interface RoomCodeCopyProps {

@@ -1,3 +1,4 @@
+'use client';
 import { KeyboardShortcutHint as ShakUIKeyboardShortcutHint } from '@shakgpt/ui';
 
 interface KeyboardShortcutHintProps {

@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { StoryForm as ShakUIStoryForm, type StoryFormData, type AIAnalysis } from '@shakgpt/ui';
 import type { Story, AIAnalysis as EstimAIteAIAnalysis } from '@/types';
