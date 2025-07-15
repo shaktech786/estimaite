@@ -76,7 +76,7 @@ describe('EstimationCards', () => {
       />
     )
 
-    const cards = screen.getAllByRole('radio')
+    const cards = screen.getAllByRole('button')
     cards.forEach(card => {
       expect(card).toBeDisabled()
     })
@@ -107,6 +107,6 @@ describe('EstimationCards', () => {
     )
 
     const card5 = screen.getByText('5')
-    expect(card5.closest('button')).toHaveClass('ring-green-500')
+    expect(card5.closest('button')).toHaveClass('ring-4', 'ring-cyan-400/50')
   })
 })

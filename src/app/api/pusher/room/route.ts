@@ -310,8 +310,8 @@ export async function POST(request: NextRequest) {
 
         const roomState = getRoomState(roomId);
 
-        // Broadcast story cleared and reset
-        await pusherServer.trigger(channelName, PUSHER_EVENTS.ESTIMATES_RESET, {
+        // Broadcast room state updated (includes story cleared)
+        await pusherServer.trigger(channelName, PUSHER_EVENTS.ROOM_STATE_UPDATED, {
           roomState,
         });
 

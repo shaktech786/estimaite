@@ -111,10 +111,33 @@ export function usePusher(roomId?: string, participantName?: string) {
         });
 
         channel.bind(PUSHER_EVENTS.ESTIMATES_RESET, (data: { roomState: RoomState }) => {
-          setRoomState(prev => ({
-            ...prev,
-            ...data.roomState,
-          }));
+          setRoomState(prev => {
+            const newState = {
+              ...prev,
+              ...data.roomState,
+            };
+
+            // For estimates reset, we keep the current story but reset other fields
+            // No need to delete currentStory here since reset keeps the story
+
+            return newState;
+          });
+        });
+
+        channel.bind(PUSHER_EVENTS.ROOM_STATE_UPDATED, (data: { roomState: RoomState }) => {
+          setRoomState(prev => {
+            const newState = {
+              ...prev,
+              ...data.roomState,
+            };
+
+            // Explicitly handle currentStory - if it's not in the new data, remove it
+            if (!('currentStory' in data.roomState) || data.roomState.currentStory === undefined) {
+              delete newState.currentStory;
+            }
+
+            return newState;
+          });
         });
 
       } catch (error) {

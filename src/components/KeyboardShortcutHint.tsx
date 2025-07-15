@@ -1,5 +1,5 @@
 'use client';
-import { KeyboardShortcutHint as ShakUIKeyboardShortcutHint } from 'shakui';
+// Removed ShakUI import
 
 interface KeyboardShortcutHintProps {
   shortcutDisplay: string;
@@ -12,12 +12,13 @@ export function KeyboardShortcutHint({
   isMobile,
   className = ''
 }: KeyboardShortcutHintProps) {
+  if (isMobile) return null;
+
   return (
-    <ShakUIKeyboardShortcutHint
-      shortcut={shortcutDisplay}
-      className={className}
-      showOnMobile={!isMobile}
-      variant="subtle"
-    />
+    <div className={`text-xs text-gray-400 font-medium ${className}`}>
+      <span className="bg-gray-800 border border-gray-600 px-2 py-1 rounded-md font-mono">
+        {shortcutDisplay}
+      </span>
+    </div>
   );
 }

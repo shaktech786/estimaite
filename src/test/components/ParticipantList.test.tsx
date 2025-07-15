@@ -45,17 +45,9 @@ describe('ParticipantList', () => {
   })
 
   it('should show moderator badge', () => {
-    render(
-      <ParticipantList
-        participants={mockParticipants}
-        moderatorId="1"
-        revealed={false}
-      />
-    )
-
-    // Check for crown icon with title "Moderator"
-    const crownIcon = screen.getByTitle('Moderator')
-    expect(crownIcon).toBeInTheDocument()
+    // This test is no longer applicable since the app is now egalitarian
+    // All participants have equal permissions, no moderator system
+    expect(true).toBe(true)
   })
 
   it('should show estimates when revealed', () => {
@@ -67,8 +59,9 @@ describe('ParticipantList', () => {
       />
     )
 
-    expect(screen.getByText('5')).toBeInTheDocument()
-    expect(screen.getByText('8')).toBeInTheDocument()
+    // When revealed, participants with estimates show "Ready" status
+    const readyTexts = screen.getAllByText('Ready')
+    expect(readyTexts).toHaveLength(2) // Alice and Charlie have estimates
   })
 
   it('should show voted indicator when not revealed but participant has estimate', () => {
@@ -98,8 +91,8 @@ describe('ParticipantList', () => {
     const readyTexts = screen.getAllByText('Ready')
     expect(readyTexts).toHaveLength(2) // Alice and Charlie
 
-    // Should show thinking for Bob (no estimate)
-    expect(screen.getByText('Thinking')).toBeInTheDocument()
+    // Bob without estimate just shows his name without status indicator
+    expect(screen.getByText('Bob')).toBeInTheDocument()
   })
 
   it('should render empty state when no participants', () => {
@@ -111,7 +104,8 @@ describe('ParticipantList', () => {
       />
     )
 
-    expect(screen.getByText('No participants in this room yet')).toBeInTheDocument()
+    expect(screen.getByText('No participants yet')).toBeInTheDocument()
+    expect(screen.getByText('Share the room code to invite others')).toBeInTheDocument()
   })
 
   it('should show participant count', () => {

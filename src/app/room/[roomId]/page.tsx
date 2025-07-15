@@ -1,16 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { usePusher } from '@/hooks/usePusher';
 import { EstimationCards } from '@/components/EstimationCards';
 import { ParticipantList } from '@/components/ParticipantList';
 import { StoryForm } from '@/components/StoryForm';
 import { Logo } from '@/components/Logo';
-import { RoomCodeCopy } from '@/components/RoomCodeCopy';
+
 import { OnboardingSteps } from '@/components/OnboardingSteps';
 import { VotingTimer } from '@/components/VotingTimer';
-import { BarChart3, Users, Eye, RotateCcw, FileText, X } from 'lucide-react';
+import { BarChart3, Users, Eye, RotateCcw, FileText, Copy, Target } from 'lucide-react';
 import type { EstimationCardValue, Story, AIAnalysis } from '@/types';
 import { calculateEstimationStats, getCardColor } from '@/lib/utils';
 
@@ -21,10 +21,6 @@ export default function RoomPage() {
   const participantName = searchParams?.get('name') || 'Anonymous';
 
   const { roomState, actions } = usePusher(roomId, participantName);
-
-  // State for new story modal
-  const [showNewStoryModal, setShowNewStoryModal] = useState(false);
-  const [newStoryTitle, setNewStoryTitle] = useState('');
 
   // AI Analysis function
   const handleStoryAnalysis = async (story: Omit<Story, 'aiAnalysis'>): Promise<AIAnalysis> => {
@@ -62,34 +58,6 @@ export default function RoomPage() {
     }
   };
 
-  // Handler for new story with title prompt
-  const handleNewStory = () => {
-    setShowNewStoryModal(true);
-  };
-
-  const handleNewStorySubmit = () => {
-    if (newStoryTitle.trim()) {
-      // Clear current story and reset
-      actions.clearStoryAndReset();
-
-      // Submit new story with the provided title
-      actions.submitStory({
-        title: newStoryTitle.trim(),
-        description: '',
-        acceptanceCriteria: [],
-      });
-
-      // Close modal and reset form
-      setShowNewStoryModal(false);
-      setNewStoryTitle('');
-    }
-  };
-
-  const handleNewStoryCancel = () => {
-    setShowNewStoryModal(false);
-    setNewStoryTitle('');
-  };
-
   // Auto-reveal votes when everyone has voted
   useEffect(() => {
     if (
@@ -112,10 +80,10 @@ export default function RoomPage() {
 
   if (roomState.loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-300">Joining room...</p>
+          <div className="w-12 h-12 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <p className="text-gray-400 text-lg">Joining room...</p>
         </div>
       </div>
     );
@@ -123,16 +91,16 @@ export default function RoomPage() {
 
   if (roomState.error) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center max-w-md">
-          <div className="w-12 h-12 bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-red-400 text-xl">⚠</span>
+          <div className="w-16 h-16 bg-red-950/50 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-red-800/50">
+            <span className="text-red-400 text-2xl">⚠</span>
           </div>
-          <h2 className="text-lg font-semibold text-white mb-2">Connection Error</h2>
-          <p className="text-red-400 mb-4">{roomState.error}</p>
+          <h2 className="text-xl font-semibold text-white mb-3">Connection Error</h2>
+          <p className="text-red-400 mb-6 leading-relaxed">{roomState.error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors"
+            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200"
           >
             Retry Connection
           </button>
@@ -153,45 +121,55 @@ export default function RoomPage() {
     return 'story';
   };
 
-  const currentStep = getCurrentStep();  return (
-    <div className="min-h-screen bg-gray-900">
+  const currentStep = getCurrentStep();
+
+  return (
+    <div className="min-h-screen bg-black">
       {/* Header */}
-      <header className="border-b border-gray-700 bg-gray-800 sticky top-0 z-10">
+      <header className="border-b border-gray-800/50 bg-gray-950/90 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 lg:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 lg:gap-4 min-w-0">
               <Logo size="sm" className="lg:hidden" />
               <Logo size="md" className="hidden lg:flex" />
-              <div className="border-l border-gray-600 pl-3 lg:pl-4 min-w-0">
-                <h1 className="text-lg lg:text-xl font-semibold text-white truncate">Room: {roomId}</h1>
-                <RoomCodeCopy
-                  roomCode={roomId}
-                  showLabel={false}
-                  size="sm"
-                  className="mt-1"
-                />
-                <p className="text-xs lg:text-sm text-gray-300 truncate">Welcome, {participantName}</p>
+              <div className="border-l border-gray-700 pl-3 lg:pl-4 min-w-0">
+                <h1 className="text-lg lg:text-xl font-semibold text-white truncate">Room {roomId}</h1>
+                <p className="text-xs lg:text-sm text-gray-500 truncate">Welcome back, {participantName}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 lg:gap-4 flex-shrink-0">
-              <div className="flex items-center gap-2 text-xs lg:text-sm text-gray-300">
-                <Users className="h-3 w-3 lg:h-4 lg:w-4" />
-                <span className="hidden sm:inline">{roomState.participants.length} participant{roomState.participants.length !== 1 ? 's' : ''}</span>
-                <span className="sm:hidden">{roomState.participants.length}</span>
+            <div className="flex items-center gap-3 lg:gap-4 flex-shrink-0">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-900/80 rounded-lg border border-gray-800">
+                <Users className="h-4 w-4 text-cyan-400" />
+                <span className="text-sm text-gray-300 font-medium">{roomState.participants.length}</span>
               </div>
 
-              {/* Removed moderator badge - all users have equal permissions */}
+              <div className="group relative">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(roomId);
+                    // Could add a toast notification here
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-cyan-950/30 text-cyan-400 border border-cyan-800/50 rounded-lg hover:bg-cyan-950/50 transition-all duration-200 text-sm font-mono"
+                  title="Click to copy room code"
+                >
+                  <Copy className="h-4 w-4" />
+                  {roomId}
+                </button>
+                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-950 border border-gray-800 text-white text-xs px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                  Copy room code
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
           {/* Participants - Show first on mobile for quick overview */}
           <div className="lg:col-span-1 order-1 lg:order-2">
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 lg:p-6 lg:sticky lg:top-24">
+            <div className="bg-gray-950/50 border border-gray-800/50 rounded-2xl p-5 lg:p-6 lg:sticky lg:top-24 backdrop-blur-xl">
               <ParticipantList
                 participants={roomState.participants}
                 moderatorId="" /* No moderator - all users have equal permissions */
@@ -203,7 +181,7 @@ export default function RoomPage() {
           </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-4 lg:space-y-6 order-2 lg:order-1">
+          <div className="lg:col-span-3 space-y-6 lg:space-y-8 order-2 lg:order-1">
             {/* Onboarding Steps */}
             <OnboardingSteps
               currentStep={currentStep}
@@ -229,14 +207,18 @@ export default function RoomPage() {
 
             {/* Story Form - Available to all users when no current story */}
             {!roomState.currentStory && (
-              <section className="bg-gray-800 border border-gray-700 rounded-lg p-4 lg:p-6">
-                <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-blue-400" />
-                  Add Story for Estimation
-                </h2>
-                <p className="text-gray-300 mb-6">
-                  Enter a story title or JIRA ID to start the estimation process.
-                </p>
+              <section className="bg-gray-950/30 border border-gray-800/30 rounded-2xl p-8 lg:p-10 backdrop-blur-xl">
+                <div className="text-center mb-8">
+                  <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
+                    <FileText className="h-8 w-8 text-blue-400" />
+                  </div>
+                  <h2 className="text-2xl font-semibold text-white mb-3">
+                    Ready to Estimate
+                  </h2>
+                  <p className="text-gray-400 max-w-lg mx-auto leading-relaxed">
+                    Add a story title or description to begin the estimation process with your team.
+                  </p>
+                </div>
                 <StoryForm
                   onSubmit={handleStorySubmit}
                   onAnalyze={handleStoryAnalysis}
@@ -247,36 +229,72 @@ export default function RoomPage() {
 
             {/* Current Story */}
             {roomState.currentStory && (
-              <section className="bg-gray-800 border border-gray-700 rounded-lg p-4 lg:p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Current Story</h2>
+              <section className="bg-gray-950/30 border border-gray-800/30 rounded-2xl p-8 lg:p-10 backdrop-blur-xl">
+                <div className="flex items-start justify-between mb-8">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/20">
+                      <FileText className="h-6 w-6 text-emerald-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-white mb-1">Current Story</h2>
+                      <p className="text-sm text-gray-500">Active estimation in progress</p>
+                    </div>
+                  </div>
+                </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-medium text-white break-words selectable-text">{roomState.currentStory.title}</h3>
-                    <p className="text-gray-300 mt-2 break-words selectable-text">{roomState.currentStory.description}</p>
+                <div className="space-y-6">
+                  <div className="bg-gray-900/40 rounded-xl p-6 border border-gray-800/40">
+                    <h3 className="font-semibold text-white text-xl mb-3 break-words selectable-text">
+                      {roomState.currentStory.title}
+                    </h3>
+                    {roomState.currentStory.description && (
+                      <p className="text-gray-300 leading-relaxed break-words selectable-text">
+                        {roomState.currentStory.description}
+                      </p>
+                    )}
                   </div>
 
                   {roomState.currentStory.acceptanceCriteria && roomState.currentStory.acceptanceCriteria.length > 0 && (
-                    <div>
-                      <h4 className="font-medium text-white mb-2">Acceptance Criteria:</h4>
-                      <ul className="list-disc list-inside space-y-1 text-sm text-gray-300 selectable-text">
+                    <div className="bg-gray-900/20 rounded-xl p-6 border border-gray-800/20">
+                      <h4 className="font-medium text-white mb-4 flex items-center gap-3">
+                        <Target className="h-5 w-5 text-amber-400" />
+                        Acceptance Criteria
+                      </h4>
+                      <ul className="space-y-3 text-gray-300 selectable-text">
                         {roomState.currentStory.acceptanceCriteria.map((criteria, index) => (
-                          <li key={index} className="break-words">{criteria}</li>
+                          <li key={index} className="flex items-start gap-3 break-words">
+                            <span className="w-2 h-2 bg-amber-400 rounded-full mt-2.5 flex-shrink-0"></span>
+                            <span className="leading-relaxed">{criteria}</span>
+                          </li>
                         ))}
                       </ul>
                     </div>
                   )}
 
                   {roomState.currentStory.aiAnalysis && (
-                    <div className="bg-blue-900/20 rounded-lg p-4 border border-blue-800">
-                      <h4 className="font-medium text-blue-100 mb-2 flex items-center gap-2">
-                        <BarChart3 className="h-4 w-4" />
+                    <div className="bg-gradient-to-r from-blue-950/30 to-purple-950/30 rounded-xl p-6 border border-blue-800/30">
+                      <h4 className="font-medium text-blue-100 mb-6 flex items-center gap-3">
+                        <BarChart3 className="h-5 w-5" />
                         AI Analysis
                       </h4>
-                      <div className="space-y-2 text-sm text-blue-200 selectable-text">
-                        <p><span className="font-medium">Complexity:</span> {roomState.currentStory.aiAnalysis.complexity}/10</p>
-                        <p><span className="font-medium">Suggested Points:</span> {roomState.currentStory.aiAnalysis.suggestedPoints}</p>
-                        <p className="break-words"><span className="font-medium">Reasoning:</span> {roomState.currentStory.aiAnalysis.reasoning}</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div className="flex items-center justify-between p-4 bg-blue-950/40 rounded-xl border border-blue-800/30">
+                          <span className="text-blue-200">Complexity</span>
+                          <span className="font-bold text-blue-100 text-xl">
+                            {roomState.currentStory.aiAnalysis.complexity}/10
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between p-4 bg-purple-950/40 rounded-xl border border-purple-800/30">
+                          <span className="text-purple-200">Suggested Points</span>
+                          <span className="font-bold text-purple-100 text-xl">
+                            {roomState.currentStory.aiAnalysis.suggestedPoints}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-4 bg-gray-950/60 rounded-xl border border-gray-800/40">
+                        <p className="text-blue-200 leading-relaxed break-words selectable-text">
+                          <span className="font-medium text-blue-100">Reasoning:</span> {roomState.currentStory.aiAnalysis.reasoning}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -286,55 +304,63 @@ export default function RoomPage() {
 
             {/* Estimation Cards */}
             {roomState.currentStory && (
-              <section className="bg-gray-800 border border-gray-700 rounded-lg p-4 lg:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+              <section className="bg-gray-950/30 border border-gray-800/30 rounded-2xl p-8 lg:p-10 backdrop-blur-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-white">Your Estimate</h2>
+                    <h2 className="text-2xl font-semibold text-white mb-3">Cast Your Vote</h2>
                     {!roomState.revealed && (
-                      <p className="text-sm text-gray-400 mt-1">
-                        {roomState.estimates.length} of {roomState.participants.length} voted
-                        {roomState.estimates.length === roomState.participants.length && ' - Ready to reveal!'}
-                      </p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+                        <p className="text-gray-400">
+                          {roomState.estimates.length} of {roomState.participants.length} participants voted
+                          {roomState.estimates.length === roomState.participants.length && ' - Ready to reveal!'}
+                        </p>
+                      </div>
+                    )}
+                    {roomState.revealed && (
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <p className="text-gray-400">Results revealed - Ready for next round</p>
+                      </div>
                     )}
                   </div>
 
-                  {/* Allow any user to reveal, end vote early, and reset estimates */}
-                  <div className="flex gap-2">
+                  {/* Control buttons with improved styling */}
+                  <div className="flex gap-3">
                     {!roomState.revealed ? (
-                      <>
-                        <button
-                          onClick={actions.revealEstimates}
-                          disabled={roomState.estimates.length === 0}
-                          className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
-                          aria-label="Reveal all estimates"
-                        >
-                          <Eye className="h-4 w-4" />
-                          <span className="hidden sm:inline">
-                            {roomState.estimates.length === roomState.participants.length
-                              ? 'Reveal All'
-                              : `Reveal (${roomState.estimates.length})`}
-                          </span>
-                        </button>
-
-
-                      </>
+                      <button
+                        onClick={actions.revealEstimates}
+                        disabled={roomState.estimates.length === 0}
+                        className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-medium rounded-xl hover:from-emerald-700 hover:to-green-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 min-h-[48px] disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-700 disabled:to-gray-700 shadow-lg"
+                        aria-label="Reveal all estimates"
+                      >
+                        <Eye className="h-5 w-5" />
+                        <span className="hidden sm:inline">
+                          {roomState.estimates.length === roomState.participants.length
+                            ? 'Reveal All'
+                            : `Reveal (${roomState.estimates.length})`}
+                        </span>
+                        <span className="sm:hidden">Reveal</span>
+                      </button>
                     ) : (
-                      <div className="flex gap-2">
+                      <div className="flex gap-3">
                         <button
                           onClick={actions.resetEstimates}
-                          className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px]"
+                          className="flex items-center gap-3 px-6 py-3 bg-gray-800 text-white font-medium rounded-xl hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 min-h-[48px] border border-gray-700"
                           aria-label="Reset estimates for new round"
                         >
-                          <RotateCcw className="h-4 w-4" />
-                          <span className="hidden sm:inline">Reset</span>
+                          <RotateCcw className="h-5 w-5" />
+                          <span className="hidden sm:inline">Reset Round</span>
+                          <span className="sm:hidden">Reset</span>
                         </button>
                         <button
-                          onClick={handleNewStory}
-                          className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors min-h-[44px]"
+                          onClick={actions.clearStoryAndReset}
+                          className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 min-h-[48px] shadow-lg"
                           aria-label="Start new story estimation"
                         >
-                          <FileText className="h-4 w-4" />
+                          <FileText className="h-5 w-5" />
                           <span className="hidden sm:inline">New Story</span>
+                          <span className="sm:hidden">New</span>
                         </button>
                       </div>
                     )}
@@ -349,55 +375,28 @@ export default function RoomPage() {
                 />
 
                 {roomState.revealed && stats && (
-                  <div className="mt-6 p-4 bg-gray-700 rounded-lg border border-gray-600">
-                    <h3 className="font-medium text-white mb-3">Estimation Results</h3>
-
-                    {/* Distribution bar chart */}
-                    <div className="mb-4">
-                      <h4 className="text-sm text-gray-300 mb-2">Vote Distribution</h4>
-                      <div className="flex items-end h-24 gap-1">
-                        {(() => {
-                          // Create histogram of votes
-                          const histogram: Record<number, number> = {};
-                          roomState.estimates.forEach(e => {
-                            const val = e.estimate;
-                            histogram[val] = (histogram[val] || 0) + 1;
-                          });
-
-                          const uniqueValues = [...new Set(roomState.estimates.map(e => e.estimate))].sort((a, b) => a - b);
-                          const maxCount = Math.max(...Object.values(histogram));
-
-                          return uniqueValues.map(value => (
-                            <div key={value} className="flex flex-col items-center flex-1">
-                              <div
-                                className={`w-full ${getCardColor(value).replace('from-', 'bg-')}`}
-                                style={{
-                                  height: `${((histogram[value] || 0) / maxCount) * 100}%`,
-                                  minHeight: '20px'
-                                }}
-                              >
-                                <div className="h-full bg-opacity-70 rounded-t-sm"></div>
-                              </div>
-                              <div className="text-xs font-medium text-white mt-1">{value}</div>
-                              <div className="text-xs text-gray-400">{histogram[value]}</div>
-                            </div>
-                          ));
-                        })()}
+                  <div className="mt-10 p-8 bg-gradient-to-r from-gray-950/60 to-gray-900/60 rounded-2xl border border-gray-800/50 backdrop-blur-xl">
+                    <div className="flex items-center gap-4 mb-8">
+                      <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/20">
+                        <BarChart3 className="h-6 w-6 text-blue-400" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-white text-xl">Estimation Results</h3>
+                        <p className="text-gray-500">Analysis of team votes</p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <span className="text-gray-300">Most Common:</span>
-                        <span className="ml-2 font-medium text-white">
+                    {/* Key Stats Cards */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                      <div className="bg-gray-900/50 rounded-xl p-5 border border-gray-800/40">
+                        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Most Common</div>
+                        <div className="text-2xl font-bold text-white">
                           {(() => {
-                            // Find mode (most common value)
                             const histogram: Record<number, number> = {};
                             roomState.estimates.forEach(e => {
                               const val = e.estimate;
                               histogram[val] = (histogram[val] || 0) + 1;
                             });
-
                             let mode = -1;
                             let maxCount = 0;
                             Object.entries(histogram).forEach(([val, count]) => {
@@ -408,33 +407,77 @@ export default function RoomPage() {
                             });
                             return mode;
                           })()}
-                        </span>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-gray-300">Median:</span>
-                        <span className="ml-2 font-medium text-white">{stats.median}</span>
+                      <div className="bg-gray-900/50 rounded-xl p-5 border border-gray-800/40">
+                        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Median</div>
+                        <div className="text-2xl font-bold text-emerald-400">{stats.median}</div>
                       </div>
-                      <div>
-                        <span className="text-gray-300">Average:</span>
-                        <span className="ml-2 font-medium text-white">{stats.average}</span>
+                      <div className="bg-gray-900/50 rounded-xl p-5 border border-gray-800/40">
+                        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Average</div>
+                        <div className="text-2xl font-bold text-blue-400">{stats.average}</div>
                       </div>
-                      <div>
-                        <span className="text-gray-300">Range:</span>
-                        <span className="ml-2 font-medium text-white">{stats.min} - {stats.max}</span>
+                      <div className="bg-gray-900/50 rounded-xl p-5 border border-gray-800/40">
+                        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Range</div>
+                        <div className="text-2xl font-bold text-purple-400">{stats.min} - {stats.max}</div>
                       </div>
                     </div>
 
-                    {stats.consensus ? (
-                      <div className="mt-3 p-3 bg-green-900/20 border border-green-800 rounded-lg">
-                        <p className="text-green-200 font-medium flex items-center gap-2">
+                    {/* Enhanced Distribution Chart */}
+                    <div className="bg-gray-900/30 rounded-xl p-6 border border-gray-800/30">
+                      <h4 className="text-white font-semibold mb-6 flex items-center gap-3">
+                        <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                        Vote Distribution
+                      </h4>
+                      <div className="flex items-end justify-center h-40 gap-3 px-4">
+                        {(() => {
+                          const histogram: Record<number, number> = {};
+                          roomState.estimates.forEach(e => {
+                            const val = e.estimate;
+                            histogram[val] = (histogram[val] || 0) + 1;
+                          });
+
+                          const uniqueValues = [...new Set(roomState.estimates.map(e => e.estimate))].sort((a, b) => a - b);
+                          const maxCount = Math.max(...Object.values(histogram));
+
+                          return uniqueValues.map(value => {
+                            const count = histogram[value] || 0;
+                            const percentage = (count / maxCount) * 100;
+                            const cardColorClass = getCardColor(value);
+
+                            return (
+                              <div key={value} className="flex flex-col items-center min-w-[70px]">
+                                <div className="text-sm font-bold text-white mb-2">{count}</div>
+                                <div
+                                  className={`w-full rounded-t-xl transition-all duration-500 ${cardColorClass.replace('from-', 'bg-').split(' ')[0]} border-t-2 border-white/20`}
+                                  style={{
+                                    height: `${Math.max(percentage, 20)}%`,
+                                    minHeight: '32px'
+                                  }}
+                                />
+                                <div className="text-lg font-bold text-white mt-3 px-3 py-2 bg-gray-800 rounded-lg border border-gray-700">
+                                  {value}
+                                </div>
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div>
+                    </div>
+
+                    {/* Consensus indicators */}
+                    {stats?.consensus ? (
+                      <div className="mt-6 p-6 bg-gradient-to-r from-emerald-950/50 to-green-950/50 border border-emerald-800/50 rounded-xl">
+                        <p className="text-emerald-200 font-semibold flex items-center gap-3 text-lg">
                           🎉 Perfect consensus reached!
                         </p>
                       </div>
                     ) : (
                       roomState.estimates.length >= 2 &&
+                      stats &&
                       ((stats.max - stats.min) / stats.max < 0.5) && (
-                        <div className="mt-3 p-3 bg-blue-900/20 border border-blue-800 rounded-lg">
-                          <p className="text-blue-200 font-medium flex items-center gap-2">
+                        <div className="mt-6 p-6 bg-gradient-to-r from-blue-950/50 to-indigo-950/50 border border-blue-800/50 rounded-xl">
+                          <p className="text-blue-200 font-semibold flex items-center gap-3 text-lg">
                             ✓ Strong agreement (low variance)
                           </p>
                         </div>
@@ -447,64 +490,6 @@ export default function RoomPage() {
           </div>
         </div>
       </main>
-
-      {/* New Story Modal */}
-      {showNewStoryModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">New Story</h3>
-              <button
-                onClick={handleNewStoryCancel}
-                className="text-gray-400 hover:text-white p-1 rounded"
-                aria-label="Close modal"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="story-title" className="block text-sm font-medium text-gray-300 mb-2">
-                  Story Title
-                </label>
-                <input
-                  id="story-title"
-                  type="text"
-                  value={newStoryTitle}
-                  onChange={(e) => setNewStoryTitle(e.target.value)}
-                  placeholder="Enter story title or JIRA ID"
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && newStoryTitle.trim()) {
-                      handleNewStorySubmit();
-                    } else if (e.key === 'Escape') {
-                      handleNewStoryCancel();
-                    }
-                  }}
-                />
-              </div>
-
-              <div className="flex gap-2 justify-end">
-                <button
-                  onClick={handleNewStoryCancel}
-                  className="px-4 py-2 text-gray-300 hover:text-white transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleNewStorySubmit}
-                  disabled={!newStoryTitle.trim()}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  Create Story
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

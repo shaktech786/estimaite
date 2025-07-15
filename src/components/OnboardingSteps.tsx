@@ -16,35 +16,40 @@ export function OnboardingSteps({ currentStep, participantCount, roomState }: On
   ];
 
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-      <h2 className="text-sm font-medium text-gray-300 mb-3">Session Progress</h2>
-      <div className="flex items-center space-x-4">
+    <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-4">
+      <h2 className="text-sm font-medium text-gray-300 mb-4 flex items-center gap-2">
+        <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+        Session Progress
+      </h2>
+      <div className="flex items-center gap-4 overflow-x-auto">
         {steps.map((step, index) => (
-          <div key={step.id} className="flex items-center">
-            <div
-              className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
-                step.completed
-                  ? 'bg-green-600 text-white'
-                  : currentStep === step.id
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-600 text-gray-300'
-              }`}
-            >
-              {index + 1}
+          <div key={step.id} className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-2">
+              <div
+                className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition-colors ${
+                  step.completed
+                    ? 'bg-green-500 text-gray-900'
+                    : currentStep === step.id
+                    ? 'bg-cyan-500 text-gray-900'
+                    : 'bg-gray-700 text-gray-400'
+                }`}
+              >
+                {step.completed ? '✓' : index + 1}
+              </div>
+              <span
+                className={`text-sm font-medium transition-colors whitespace-nowrap ${
+                  step.completed
+                    ? 'text-green-400'
+                    : currentStep === step.id
+                    ? 'text-cyan-400'
+                    : 'text-gray-500'
+                }`}
+              >
+                {step.label}
+              </span>
             </div>
-            <span
-              className={`ml-2 text-sm ${
-                step.completed
-                  ? 'text-green-400'
-                  : currentStep === step.id
-                  ? 'text-blue-400'
-                  : 'text-gray-400'
-              }`}
-            >
-              {step.label}
-            </span>
             {index < steps.length - 1 && (
-              <div className="ml-4 w-6 h-px bg-gray-600"></div>
+              <div className="w-8 h-px bg-gray-600 flex-shrink-0"></div>
             )}
           </div>
         ))}

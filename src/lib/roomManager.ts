@@ -252,8 +252,8 @@ export function createOrRecoverRoom(roomId: string, roomName?: string): boolean 
     return false; // Room already exists
   }
 
-  // Validate room ID format (4 numeric digits)
-  if (!/^\d{4}$/.test(roomId)) {
+  // Validate room ID format (4 alphanumeric characters, excluding ambiguous ones)
+  if (!/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}$/.test(roomId)) {
     return false; // Invalid room ID format
   }
 

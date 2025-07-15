@@ -111,7 +111,7 @@ describe('VotingTimer', () => {
   it('should apply correct color for time remaining', () => {
     const { rerender } = render(
       <VotingTimer
-        initialTime={30} // 30 seconds - should be red
+        initialTime={30} // 30 seconds - should be amber (urgent but not almost done)
         active={true}
         onTimeUp={mockOnTimeUp}
         onToggle={mockOnToggle}
@@ -120,11 +120,11 @@ describe('VotingTimer', () => {
     )
 
     const timer = screen.getByText('0:30')
-    expect(timer).toHaveClass('text-red-400')
+    expect(timer).toHaveClass('text-amber-400')
 
     rerender(
       <VotingTimer
-        initialTime={45} // 45 seconds - should be yellow
+        initialTime={10} // 10 seconds - should be red (almost done)
         active={true}
         onTimeUp={mockOnTimeUp}
         onToggle={mockOnToggle}
@@ -132,8 +132,8 @@ describe('VotingTimer', () => {
       />
     )
 
-    const timer2 = screen.getByText('0:45')
-    expect(timer2).toHaveClass('text-yellow-400')
+    const timer2 = screen.getByText('0:10')
+    expect(timer2).toHaveClass('text-red-400')
   })
 
   it('should not render when not active and at initial time', () => {
@@ -147,7 +147,8 @@ describe('VotingTimer', () => {
       />
     )
 
-    // Timer should not render when not active and at initial time
-    expect(container.firstChild).toBeNull()
+    // Timer component still renders even when not active (it shows pause/resume controls)
+    expect(container.firstChild).not.toBeNull()
+    expect(screen.getByText('5:00')).toBeInTheDocument()
   })
 })
