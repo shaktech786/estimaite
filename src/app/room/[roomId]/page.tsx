@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import React from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { usePusher } from '@/hooks/usePusher';
 import { EstimationCards } from '@/components/EstimationCards';
@@ -58,25 +58,7 @@ export default function RoomPage() {
     }
   };
 
-  // Auto-reveal votes when everyone has voted
-  useEffect(() => {
-    if (
-      roomState.currentStory &&
-      !roomState.revealed &&
-      roomState.estimates.length > 0 &&
-      roomState.estimates.length === roomState.participants.length
-    ) {
-      // Small delay to allow users to see that everyone has voted
-      const timer = setTimeout(() => {
-        actions.revealEstimates();
-      }, 1500);
-
-      return () => clearTimeout(timer);
-    }
-
-    // Return empty cleanup function if condition isn't met
-    return () => {};
-  }, [roomState.currentStory, roomState.revealed, roomState.estimates.length, roomState.participants.length, actions]);
+  // Auto-reveal votes when everyone has voted (removed client-side logic since server handles this)
 
   if (roomState.loading) {
     return (

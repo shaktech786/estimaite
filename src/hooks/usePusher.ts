@@ -93,6 +93,7 @@ export function usePusher(roomId?: string, participantName?: string) {
           setRoomState(prev => ({
             ...prev,
             ...data.roomState,
+            // Clear any previous selection when new story starts
           }));
         });
 
@@ -115,6 +116,7 @@ export function usePusher(roomId?: string, participantName?: string) {
             const newState = {
               ...prev,
               ...data.roomState,
+              // Clear selectedEstimate when estimates are reset
             };
 
             // For estimates reset, we keep the current story but reset other fields
@@ -129,6 +131,7 @@ export function usePusher(roomId?: string, participantName?: string) {
             const newState = {
               ...prev,
               ...data.roomState,
+              // Clear selectedEstimate when story is cleared
             };
 
             // Explicitly handle currentStory - if it's not in the new data, remove it
@@ -260,10 +263,11 @@ export function usePusher(roomId?: string, participantName?: string) {
       if (!participantRef.current) return;
 
       try {
-        setRoomState(prev => ({
-          ...prev,
-          selectedEstimate: -1,
-        }));
+        setRoomState(prev => {
+          const newState = { ...prev };
+          delete newState.selectedEstimate;
+          return newState;
+        });
 
         const response = await fetch('/api/pusher/room', {
           method: 'POST',
@@ -288,10 +292,17 @@ export function usePusher(roomId?: string, participantName?: string) {
       if (!participantRef.current) return;
 
       try {
-        setRoomState(prev => ({
-          ...prev,
-          selectedEstimate: -1,
-        }));
+        // Optimistically update the UI
+        setRoomState(prev => {
+          const newState = {
+            ...prev,
+            estimates: [],
+            revealed: false,
+          };
+          delete newState.selectedEstimate;
+          delete newState.currentStory;
+          return newState;
+        });
 
         const response = await fetch('/api/pusher/room', {
           method: 'POST',

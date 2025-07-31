@@ -249,6 +249,27 @@ export async function POST(request: NextRequest) {
 
         const roomState = getRoomState(roomId);
 
+        // Check if all participants have submitted estimates and auto-reveal
+        const allParticipantsVoted = roomState && 
+                                   roomState.participants.length > 0 && 
+                                   roomState.estimates.length >= roomState.participants.length;
+        
+        if (allParticipantsVoted && !roomState?.revealed) {
+          console.log(`All participants voted in room ${roomId}, auto-revealing estimates`);
+          
+          // Small delay for UX
+          setTimeout(async () => {
+            const success = revealEstimates(roomId);
+            if (success) {
+              const updatedRoomState = getRoomState(roomId);
+              await pusherServer.trigger(channelName, PUSHER_EVENTS.ESTIMATES_REVEALED, {
+                roomState: updatedRoomState,
+                autoRevealed: true,
+              });
+            }
+          }, 1500);
+        }
+
         // Broadcast estimate submitted
         await pusherServer.trigger(channelName, PUSHER_EVENTS.ESTIMATE_SUBMITTED, {
           participantId,

@@ -181,6 +181,14 @@ export function submitEstimate(roomId: string, participantId: string, estimate: 
   if (!room) return false;
 
   room.estimates.set(participantId, estimate);
+  
+  // Update participant estimate as well
+  const participant = room.participants.get(participantId);
+  if (participant) {
+    participant.estimate = estimate;
+    participant.isReady = true;
+  }
+  
   room.lastActivity = new Date();
   return true;
 }
@@ -207,6 +215,11 @@ export function resetEstimates(roomId: string): boolean {
   room.estimates.clear();
   room.revealed = false;
 
+  // Clear estimates from participants
+  room.participants.forEach(participant => {
+    delete participant.estimate;
+  });
+
   // Restart voting timer for new round
   if (room.currentStory) {
     room.votingTimer = {
@@ -228,6 +241,12 @@ export function clearStoryAndReset(roomId: string): boolean {
   room.currentStory = undefined;
   room.estimates.clear();
   room.revealed = false;
+
+  // Clear estimates from participants
+  room.participants.forEach(participant => {
+    delete participant.estimate;
+    participant.isReady = false;
+  });
 
   // Stop any active voting timer
   if (room.votingTimer) {
