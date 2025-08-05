@@ -158,14 +158,10 @@ export async function POST(request: NextRequest) {
 
         // Only broadcast if this is a genuinely new participant
         if (isNewParticipant) {
-          console.log(`Broadcasting PARTICIPANT_JOINED for ${participant.id} (${participant.name}) to channel ${channelName}`);
-          console.log(`Broadcasting room state with ${roomState?.participants.length} participants`);
           await pusherServer.trigger(channelName, PUSHER_EVENTS.PARTICIPANT_JOINED, {
             participant,
             roomState,
           });
-        } else {
-          console.log(`Skipping PARTICIPANT_JOINED broadcast for existing participant ${participant.id} (${participant.name})`);
         }
 
         return NextResponse.json({

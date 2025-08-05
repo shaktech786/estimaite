@@ -165,6 +165,12 @@ export function submitStory(roomId: string, story: Story): boolean {
   room.estimates.clear();
   room.revealed = false;
 
+  // Clear estimates from participants to ensure consistency
+  room.participants.forEach(participant => {
+    delete participant.estimate;
+    participant.isReady = false;
+  });
+
   // Start voting timer (2 minutes default)
   room.votingTimer = {
     startTime: new Date(),

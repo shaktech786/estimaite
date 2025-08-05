@@ -76,10 +76,6 @@ export function usePusher(roomId?: string, participantName?: string) {
 
         // Bind event listeners
         channel.bind(PUSHER_EVENTS.PARTICIPANT_JOINED, (data: { roomState: RoomState }) => {
-          console.log('PARTICIPANT_JOINED event received:', {
-            newParticipantCount: data.roomState.participants?.length,
-            newParticipants: data.roomState.participants?.map(p => ({ id: p.id, name: p.name }))
-          });
           setRoomState(prev => ({
             ...prev,
             ...data.roomState,

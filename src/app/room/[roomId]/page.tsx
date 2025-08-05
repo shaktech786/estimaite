@@ -329,20 +329,20 @@ export default function RoomPage() {
                         <button
                           onClick={actions.resetEstimates}
                           className="flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2.5 sm:py-3 bg-gray-800 text-white font-medium rounded-lg sm:rounded-xl hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 min-h-[44px] sm:min-h-[48px] border border-gray-700 touch-manipulation text-sm sm:text-base"
-                          aria-label="Reset estimates for new round"
+                          aria-label="Reset estimates for new round with same story"
                         >
                           <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                          <span className="hidden md:inline">Reset Round</span>
-                          <span className="md:hidden">Reset</span>
+                          <span className="hidden sm:inline">Re-vote</span>
+                          <span className="sm:hidden">Re-vote</span>
                         </button>
                         <button
                           onClick={actions.clearStoryAndReset}
                           className="flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg sm:rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 min-h-[44px] sm:min-h-[48px] shadow-lg touch-manipulation text-sm sm:text-base"
-                          aria-label="Start new story estimation"
+                          aria-label="Start estimation for a new story"
                         >
                           <FileText className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                          <span className="hidden md:inline">New Story</span>
-                          <span className="md:hidden">New</span>
+                          <span className="hidden sm:inline">New Story</span>
+                          <span className="sm:hidden">Next</span>
                         </button>
                       </div>
                     )}
