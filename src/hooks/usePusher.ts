@@ -93,6 +93,8 @@ export function usePusher(roomId?: string, participantName?: string) {
           setRoomState(prev => ({
             ...prev,
             ...data.roomState,
+            // Ensure we maintain the participants list from server data
+            participants: data.roomState.participants || prev.participants,
             // Clear any previous selection when new story starts
           }));
         });
@@ -101,6 +103,8 @@ export function usePusher(roomId?: string, participantName?: string) {
           setRoomState(prev => ({
             ...prev,
             ...data.roomState,
+            // Ensure we maintain the participants list from server data
+            participants: data.roomState.participants || prev.participants,
           }));
         });
 
@@ -108,6 +112,8 @@ export function usePusher(roomId?: string, participantName?: string) {
           setRoomState(prev => ({
             ...prev,
             ...data.roomState,
+            // Ensure we maintain the participants list from server data
+            participants: data.roomState.participants || prev.participants,
           }));
         });
 
@@ -116,6 +122,8 @@ export function usePusher(roomId?: string, participantName?: string) {
             const newState = {
               ...prev,
               ...data.roomState,
+              // Ensure we maintain the participants list from server data
+              participants: data.roomState.participants || prev.participants,
               // Clear selectedEstimate when estimates are reset
             };
 
@@ -131,6 +139,8 @@ export function usePusher(roomId?: string, participantName?: string) {
             const newState = {
               ...prev,
               ...data.roomState,
+              // Ensure we maintain the participants list from server data
+              participants: data.roomState.participants || prev.participants,
               // Clear selectedEstimate when story is cleared
             };
 
