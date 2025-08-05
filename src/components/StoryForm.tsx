@@ -55,8 +55,8 @@ export function StoryForm({
   };
 
   return (
-    <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
-      <form onSubmit={handleSubmit} className="space-y-5">
+    <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg sm:rounded-xl p-4 sm:p-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-2">
             Story Title
@@ -67,7 +67,7 @@ export function StoryForm({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="As a user, I want to..."
-            className="w-full px-4 py-3 bg-gray-900/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors text-sm sm:text-base"
             disabled={disabled || loading}
             required
           />
@@ -83,7 +83,7 @@ export function StoryForm({
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Provide additional context and details..."
             rows={3}
-            className="w-full px-4 py-3 bg-gray-900/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors resize-none"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors resize-none text-sm sm:text-base"
             disabled={disabled || loading}
           />
         </div>
@@ -110,14 +110,14 @@ export function StoryForm({
                   value={criteria}
                   onChange={(e) => updateCriteria(index, e.target.value)}
                   placeholder={`Criteria ${index + 1}`}
-                  className="flex-1 px-4 py-2 bg-gray-900/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors text-sm"
+                  className="flex-1 px-3 sm:px-4 py-2 bg-gray-900/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors text-sm"
                   disabled={disabled || loading}
                 />
                 <button
                   type="button"
                   onClick={() => removeCriteria(index)}
                   disabled={disabled || loading}
-                  className="px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
+                  className="px-2.5 sm:px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 flex-shrink-0 touch-manipulation"
                 >
                   ×
                 </button>

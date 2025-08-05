@@ -104,10 +104,11 @@ export default function HomePage() {
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <header className="border-b border-gray-700 bg-gray-800">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-6">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 lg:py-6">
           <div className="flex items-center justify-center">
-            <div className="flex items-center gap-4">
-              <Logo size="md" className="sm:hidden" />
+            <div className="flex items-center gap-3 sm:gap-4">
+              <Logo size="sm" className="xs:hidden" />
+              <Logo size="md" className="hidden xs:flex sm:hidden" />
               <Logo size="lg" className="hidden sm:flex" />
             </div>
           </div>
@@ -115,29 +116,29 @@ export default function HomePage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        <div className="text-center mb-8 lg:mb-12">
-          <h2 className="text-2xl lg:text-3xl font-bold text-white mb-4">
+      <main className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+        <div className="text-center mb-6 sm:mb-8 lg:mb-12">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-3 sm:mb-4 px-2">
             Planning Poker Made Simple
           </h2>
-          <p className="text-base lg:text-lg text-gray-300 max-w-2xl mx-auto selectable-text">
+          <p className="text-sm sm:text-base lg:text-lg text-gray-300 max-w-2xl mx-auto selectable-text px-4 leading-relaxed">
             Estimate user stories with your team using AI-powered insights.
             No sign-up required, sessions are temporary and private.
           </p>
         </div>
 
         {/* Action Cards */}
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-2xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-2xl mx-auto">
           {/* Create Room */}
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4 sm:p-5 lg:p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <Plus className="h-5 w-5 text-blue-400" />
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
               </div>
-              <h3 className="text-xl font-semibold text-white">Create Room</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-white">Create Room</h3>
             </div>
 
-            <p className="text-gray-300 mb-6">
+            <p className="text-sm sm:text-base text-gray-300 mb-5 sm:mb-6 leading-relaxed">
               Start a new estimation session and invite your team members.
             </p>
 
