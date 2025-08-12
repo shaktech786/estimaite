@@ -14,7 +14,7 @@ export default function HomePage() {
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const [roomName, setRoomName] = useState('');
-  const [roomCode, setRoomCode] = useState('');
+  const [roomLink, setRoomLink] = useState('');
   const [participantName, setParticipantName] = useState('');
 
   const createRoom = async (e: React.FormEvent) => {
@@ -32,7 +32,12 @@ export default function HomePage() {
       if (!response.ok) throw new Error('Failed to create room');
 
       const { roomId } = await response.json();
-      router.push(`/room/${roomId}?name=${encodeURIComponent(participantName || 'Anonymous')}`);
+      // Redirect to room, user will be prompted for name if not provided
+      if (participantName.trim()) {
+        router.push(`/room/${roomId}?name=${encodeURIComponent(participantName)}`);
+      } else {
+        router.push(`/room/${roomId}`);
+      }
     } catch (error) {
       console.error('Error creating room:', error);
       alert('Failed to create room. Please try again.');
@@ -43,29 +48,44 @@ export default function HomePage() {
 
   const joinRoom = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!roomCode.trim()) return;
-
-    // Validate room code format (4 alphanumeric characters)
-    const formattedRoomCode = roomCode.trim().toUpperCase();
-    if (!/^[A-Z0-9]{4}$/.test(formattedRoomCode)) {
-      alert('Room code must be 4 characters (letters and numbers only)');
-      return;
-    }
+    if (!roomLink.trim()) return;
 
     setIsJoining(true);
     try {
-      const response = await fetch(`/api/rooms?roomId=${formattedRoomCode}`);
+      let roomId: string;
+      
+      // Check if input is a URL or just a room code
+      if (roomLink.includes('/room/')) {
+        // Extract room ID from URL
+        const match = roomLink.match(/\/room\/([A-Z0-9]{4})/);
+        if (!match || !match[1]) {
+          alert('Invalid room link. Please check the link and try again.');
+          return;
+        }
+        roomId = match[1];
+      } else {
+        // Treat as room code
+        const formattedRoomCode = roomLink.trim().toUpperCase();
+        if (!/^[A-Z0-9]{4}$/.test(formattedRoomCode)) {
+          alert('Invalid room code or link. Room codes must be 4 characters (letters and numbers only).');
+          return;
+        }
+        roomId = formattedRoomCode;
+      }
 
+      // Validate room exists
+      const response = await fetch(`/api/rooms?roomId=${roomId}`);
       if (!response.ok) {
         if (response.status === 404) {
-          alert('Room not found. The room may have expired due to inactivity, or the code may be incorrect. Please double-check the room code or create a new room.');
+          alert('Room not found. The room may have expired due to inactivity, or the link may be incorrect.');
         } else {
           throw new Error('Failed to join room');
         }
         return;
       }
 
-      router.push(`/room/${formattedRoomCode}?name=${encodeURIComponent(participantName || 'Anonymous')}`);
+      // Redirect to room (name will be asked there if not provided)
+      router.push(`/room/${roomId}`);
     } catch (error) {
       console.error('Error joining room:', error);
       alert('Failed to join room. Please try again.');
@@ -87,8 +107,8 @@ export default function HomePage() {
     }
   };
 
-  const canCreateRoom = roomName.trim() && participantName.trim() && !isCreating;
-  const canJoinRoom = roomCode.trim() && participantName.trim() && !isJoining;
+  const canCreateRoom = roomName.trim() && !isCreating;
+  const canJoinRoom = roomLink.trim() && !isJoining;
 
   const createPlatformInfo = useKeyboardShortcuts({
     onSubmit: handleCreateRoom,
@@ -106,11 +126,7 @@ export default function HomePage() {
       <header className="border-b border-gray-700 bg-gray-800">
         <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 lg:py-6">
           <div className="flex items-center justify-center">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <Logo size="sm" className="xs:hidden" />
-              <Logo size="md" className="hidden xs:flex sm:hidden" />
-              <Logo size="lg" className="hidden sm:flex" />
-            </div>
+            <Logo size="lg" />
           </div>
         </div>
       </header>
@@ -152,13 +168,12 @@ export default function HomePage() {
                   type="text"
                   value={participantName}
                   onChange={(e) => setParticipantName(e.target.value)}
-                  placeholder="Enter your name"
+                  placeholder="Enter your name (optional)"
                   className="w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  required
                   aria-describedby="name-help"
                 />
                 <p id="name-help" className="text-xs text-gray-400 mt-1">
-                  This will be visible to other participants
+                  You can enter your name now or when you join the room
                 </p>
               </div>
 
@@ -180,7 +195,7 @@ export default function HomePage() {
 
               <button
                 type="submit"
-                disabled={isCreating || !roomName.trim() || !participantName.trim()}
+                disabled={isCreating || !roomName.trim()}
                 className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px] touch-manipulation"
               >
                 <div className="flex items-center justify-center gap-2">
@@ -206,56 +221,37 @@ export default function HomePage() {
             </div>
 
             <p className="text-gray-300 mb-6">
-              Enter a room code to join an existing estimation session.
+              Paste a room link or enter a room code to join an estimation session.
             </p>
 
             <div className="bg-amber-900/20 border border-amber-700/50 rounded-lg p-3 mb-6">
               <p className="text-amber-200 text-xs">
-                💡 <strong>Note:</strong> Rooms expire after 30 minutes of inactivity for privacy and performance.
+                💡 <strong>Tip:</strong> You can paste a room link or just enter the 4-character room code. Your name will be requested when you join.
               </p>
             </div>
 
             <form onSubmit={joinRoom} className="space-y-4">
               <div>
-                <label htmlFor="participant-name-join" className="block text-sm font-medium text-gray-300 mb-2">
-                  Your Name
+                <label htmlFor="room-link" className="block text-sm font-medium text-gray-300 mb-2">
+                  Room Link or Code
                 </label>
                 <input
-                  id="participant-name-join"
+                  id="room-link"
                   type="text"
-                  value={participantName}
-                  onChange={(e) => setParticipantName(e.target.value)}
-                  placeholder="Enter your name"
+                  value={roomLink}
+                  onChange={(e) => setRoomLink(e.target.value)}
+                  placeholder="Paste room link or enter code (e.g., A2Z9)"
                   className="w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                   required
                 />
-              </div>
-
-              <div>
-                <label htmlFor="room-code" className="block text-sm font-medium text-gray-300 mb-2">
-                  Room Code
-                </label>
-                <input
-                  id="room-code"
-                  type="text"
-                  value={roomCode}
-                  onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                  placeholder="A2Z9"
-                  pattern="[A-Za-z0-9]{4}"
-                  title="4 letters or numbers"
-                  className="w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors font-mono text-center"
-                  required
-                  maxLength={4}
-                  minLength={4}
-                />
                 <p className="text-xs text-gray-400 mt-1">
-                  4-character code (letters and numbers)
+                  Paste the full room link or just the 4-character code
                 </p>
               </div>
 
               <button
                 type="submit"
-                disabled={isJoining || !roomCode.trim() || !participantName.trim()}
+                disabled={isJoining || !roomLink.trim()}
                 className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px] touch-manipulation"
               >
                 <div className="flex items-center justify-center gap-2">

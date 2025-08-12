@@ -20,11 +20,6 @@ export interface Room {
   estimates: Map<string, number>;
   revealed: boolean;
   moderatorId?: string;
-  votingTimer?: {
-    startTime: Date;
-    duration: number; // in seconds
-    active: boolean;
-  };
 }
 
 export interface Story {
@@ -190,10 +185,6 @@ export interface RoomState {
   revealed: boolean;
   isModerator: boolean;
   selectedEstimate?: number;
-  votingTimer?: {
-    remainingTime: number; // in seconds
-    active: boolean;
-  };
 }
 
 export type EstimationCardValue = 1 | 2 | 3 | 5 | 8 | 13 | 21 | 34 | 55 | 89 | '?';

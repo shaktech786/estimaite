@@ -12,7 +12,6 @@ import {
   roomExists,
   getRoomData,
   createOrRecoverRoom,
-  isVotingTimerExpired,
   getParticipantBySessionId,
   cleanupStaleParticipantsBySession
 } from '@/lib/roomManager';
@@ -34,19 +33,6 @@ export async function POST(request: NextRequest) {
     }
 
     const channelName = getChannelName(roomId);
-
-    // Check if voting timer has expired and auto-reveal if needed
-    if (isVotingTimerExpired(roomId)) {
-      console.log(`Voting timer expired for room ${roomId}, auto-revealing estimates`);
-      revealEstimates(roomId);
-      const expiredRoomState = getRoomState(roomId);
-
-      // Broadcast timer expiration
-      await pusherServer.trigger(channelName, PUSHER_EVENTS.ESTIMATES_REVEALED, {
-        roomState: expiredRoomState,
-        autoRevealed: true,
-      });
-    }
 
     switch (action) {
       case 'join': {
@@ -249,26 +235,8 @@ export async function POST(request: NextRequest) {
 
         const roomState = getRoomState(roomId);
 
-        // Check if all participants have submitted estimates and auto-reveal
-        const allParticipantsVoted = roomState && 
-                                   roomState.participants.length > 0 && 
-                                   roomState.estimates.length >= roomState.participants.length;
-        
-        if (allParticipantsVoted && !roomState?.revealed) {
-          console.log(`All participants voted in room ${roomId}, auto-revealing estimates`);
-          
-          // Small delay for UX
-          setTimeout(async () => {
-            const success = revealEstimates(roomId);
-            if (success) {
-              const updatedRoomState = getRoomState(roomId);
-              await pusherServer.trigger(channelName, PUSHER_EVENTS.ESTIMATES_REVEALED, {
-                roomState: updatedRoomState,
-                autoRevealed: true,
-              });
-            }
-          }, 1500);
-        }
+        // Removed automatic reveal when all participants vote
+        // Voting must now be ended manually using the "End Voting" button
 
         // Broadcast estimate submitted
         await pusherServer.trigger(channelName, PUSHER_EVENTS.ESTIMATE_SUBMITTED, {

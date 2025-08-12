@@ -11,11 +11,6 @@ const rooms = new Map<string, {
   moderatorId: string;
   createdAt: Date;
   lastActivity: Date;
-  votingTimer?: {
-    startTime: Date;
-    duration: number; // in seconds
-    active: boolean;
-  };
 }>();
 
 // Clean expired rooms on each operation (serverless-friendly)
@@ -101,16 +96,6 @@ export function getRoomState(roomId: string): RoomState | null {
     result.currentStory = room.currentStory;
   }
 
-  // Add timer info if active
-  if (room.votingTimer && room.votingTimer.active) {
-    const elapsed = Math.floor((new Date().getTime() - room.votingTimer.startTime.getTime()) / 1000);
-    const remainingTime = Math.max(0, room.votingTimer.duration - elapsed);
-    result.votingTimer = {
-      remainingTime,
-      active: remainingTime > 0,
-    };
-  }
-
   return result;
 }
 
@@ -171,13 +156,6 @@ export function submitStory(roomId: string, story: Story): boolean {
     participant.isReady = false;
   });
 
-  // Start voting timer (2 minutes default)
-  room.votingTimer = {
-    startTime: new Date(),
-    duration: 120, // 2 minutes
-    active: true,
-  };
-
   room.lastActivity = new Date();
   return true;
 }
@@ -204,12 +182,6 @@ export function revealEstimates(roomId: string): boolean {
   if (!room) return false;
 
   room.revealed = true;
-
-  // Stop the voting timer when estimates are revealed
-  if (room.votingTimer) {
-    room.votingTimer.active = false;
-  }
-
   room.lastActivity = new Date();
   return true;
 }
@@ -225,15 +197,6 @@ export function resetEstimates(roomId: string): boolean {
   room.participants.forEach(participant => {
     delete participant.estimate;
   });
-
-  // Restart voting timer for new round
-  if (room.currentStory) {
-    room.votingTimer = {
-      startTime: new Date(),
-      duration: 120, // 2 minutes
-      active: true,
-    };
-  }
 
   room.lastActivity = new Date();
   return true;
@@ -253,11 +216,6 @@ export function clearStoryAndReset(roomId: string): boolean {
     delete participant.estimate;
     participant.isReady = false;
   });
-
-  // Stop any active voting timer
-  if (room.votingTimer) {
-    room.votingTimer.active = false;
-  }
 
   room.lastActivity = new Date();
   return true;
@@ -302,37 +260,7 @@ export function getRoomData(roomId: string) {
   return rooms.get(roomId);
 }
 
-export function startVotingTimer(roomId: string, duration: number = 300): boolean {
-  const room = rooms.get(roomId);
-  if (!room) return false;
-
-  room.votingTimer = {
-    startTime: new Date(),
-    duration,
-    active: true,
-  };
-  room.lastActivity = new Date();
-  return true;
-}
-
-export function stopVotingTimer(roomId: string): boolean {
-  const room = rooms.get(roomId);
-  if (!room) return false;
-
-  if (room.votingTimer) {
-    room.votingTimer.active = false;
-  }
-  room.lastActivity = new Date();
-  return true;
-}
-
-export function isVotingTimerExpired(roomId: string): boolean {
-  const room = rooms.get(roomId);
-  if (!room || !room.votingTimer || !room.votingTimer.active) return false;
-
-  const elapsed = Math.floor((new Date().getTime() - room.votingTimer.startTime.getTime()) / 1000);
-  return elapsed >= room.votingTimer.duration;
-}
+// Timer functions removed - voting is now manual only
 
 export function getParticipantBySessionId(roomId: string, sessionId: string): Participant | null {
   const room = rooms.get(roomId);

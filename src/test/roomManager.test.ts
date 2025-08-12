@@ -78,7 +78,7 @@ describe('roomManager', () => {
       addParticipant(roomId, participant)
     })
 
-    it('should submit a story and start voting timer', () => {
+    it('should submit a story', () => {
       const story: Story = {
         title: 'Test Story',
         description: 'A test user story',
@@ -134,7 +134,7 @@ describe('roomManager', () => {
       submitEstimate(roomId, participant.id, 5)
     })
 
-    it('should reveal estimates and stop timer', () => {
+    it('should reveal estimates', () => {
       const success = revealEstimates(roomId)
       expect(success).toBe(true)
 
@@ -155,7 +155,7 @@ describe('roomManager', () => {
       revealEstimates(roomId)
     })
 
-    it('should reset estimates and restart timer', () => {
+    it('should reset estimates', () => {
       const success = resetEstimates(roomId)
       expect(success).toBe(true)
 

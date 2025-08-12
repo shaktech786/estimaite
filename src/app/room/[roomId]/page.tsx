@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import React, { useState } from 'react';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { usePusher } from '@/hooks/usePusher';
 import { EstimationCards } from '@/components/EstimationCards';
 import { ParticipantList } from '@/components/ParticipantList';
@@ -9,7 +9,6 @@ import { StoryForm } from '@/components/StoryForm';
 import { Logo } from '@/components/Logo';
 
 import { OnboardingSteps } from '@/components/OnboardingSteps';
-import { VotingTimer } from '@/components/VotingTimer';
 import { BarChart3, Users, Eye, RotateCcw, FileText, Copy, Target } from 'lucide-react';
 import type { EstimationCardValue, Story, AIAnalysis } from '@/types';
 import { calculateEstimationStats, getCardColor } from '@/lib/utils';
@@ -17,10 +16,22 @@ import { calculateEstimationStats, getCardColor } from '@/lib/utils';
 export default function RoomPage() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const roomId = params?.roomId as string;
-  const participantName = searchParams?.get('name') || 'Anonymous';
+  const participantName = searchParams?.get('name');
+  
+  const [showNameDialog] = useState(!participantName);
+  const [nameInput, setNameInput] = useState('');
 
-  const { roomState, actions } = usePusher(roomId, participantName);
+  const { roomState, actions } = usePusher(roomId, participantName || '');
+
+  const handleJoinRoom = () => {
+    if (nameInput.trim()) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('name', nameInput.trim());
+      router.push(url.pathname + url.search);
+    }
+  };
 
   // AI Analysis function
   const handleStoryAnalysis = async (story: Omit<Story, 'aiAnalysis'>): Promise<AIAnalysis> => {
@@ -105,6 +116,49 @@ export default function RoomPage() {
 
   const currentStep = getCurrentStep();
 
+  // Show name entry dialog if user came via URL without name
+  if (showNameDialog) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <div className="bg-gray-950 border border-gray-800 rounded-2xl p-8 max-w-md w-full">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/20">
+              <Logo size="sm" />
+            </div>
+            <h1 className="text-2xl font-semibold text-white mb-2">Join Room {roomId}</h1>
+            <p className="text-gray-400">Enter your name to join the estimation session</p>
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                Your Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleJoinRoom()}
+                placeholder="Enter your name"
+                className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                autoFocus
+              />
+            </div>
+            
+            <button
+              onClick={handleJoinRoom}
+              disabled={!nameInput.trim()}
+              className="w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Join Room
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black">
       {/* Header */}
@@ -112,10 +166,10 @@ export default function RoomPage() {
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 md:py-4">
           <div className="flex items-center justify-between gap-2 sm:gap-4">
             <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 min-w-0 flex-1">
-              <Logo size="sm" className="flex-shrink-0" />
+              <Logo size="sm" iconOnly={true} className="flex-shrink-0" />
               <div className="border-l border-gray-700 pl-2 sm:pl-3 lg:pl-4 min-w-0 flex-1">
                 <h1 className="text-base sm:text-lg lg:text-xl font-semibold text-white truncate">Room {roomId}</h1>
-                <p className="text-xs sm:text-sm text-gray-500 truncate hidden xs:block">Welcome, {participantName}</p>
+                <p className="text-xs sm:text-sm text-gray-500 truncate hidden xs:block">Welcome, {participantName || 'Anonymous'}</p>
               </div>
             </div>
 
@@ -128,18 +182,19 @@ export default function RoomPage() {
               <div className="group relative">
                 <button
                   onClick={() => {
-                    navigator.clipboard.writeText(roomId);
+                    const roomLink = `${window.location.origin}/room/${roomId}`;
+                    navigator.clipboard.writeText(roomLink);
                     // Could add a toast notification here
                   }}
-                  className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-cyan-950/30 text-cyan-400 border border-cyan-800/50 rounded-lg hover:bg-cyan-950/50 transition-all duration-200 text-xs sm:text-sm font-mono touch-manipulation"
-                  title="Click to copy room code"
+                  className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-cyan-950/30 text-cyan-400 border border-cyan-800/50 rounded-lg hover:bg-cyan-950/50 transition-all duration-200 text-xs sm:text-sm touch-manipulation"
+                  title="Click to copy room link"
                 >
                   <Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
-                  <span className="hidden xs:inline">{roomId}</span>
-                  <span className="xs:hidden">Copy</span>
+                  <span className="hidden xs:inline">Share Link</span>
+                  <span className="xs:hidden">Share</span>
                 </button>
                 <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-950 border border-gray-800 text-white text-xs px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                  Copy room code
+                  Copy room link
                 </div>
               </div>
             </div>
@@ -170,22 +225,6 @@ export default function RoomPage() {
               participantCount={roomState.participants.length}
               roomState={roomState}
             />
-
-            {/* Voting Timer */}
-            {roomState.votingTimer?.active && (
-              <VotingTimer
-                initialTime={roomState.votingTimer.remainingTime}
-                active={roomState.votingTimer.active}
-                onTimeUp={() => {
-                  actions.revealEstimates(); // Anyone can reveal estimates when time is up
-                }}
-                showControls={true} // Anyone can control the timer
-                onToggle={(paused) => {
-                  // Logic to handle timer pause/resume would go here
-                  console.log(`Timer ${paused ? 'paused' : 'resumed'}`);
-                }}
-              />
-            )}
 
             {/* Story Form - Available to all users when no current story */}
             {!roomState.currentStory && (
@@ -289,62 +328,63 @@ export default function RoomPage() {
               <section className="bg-gray-950/30 border border-gray-800/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 lg:p-10 backdrop-blur-xl">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6">
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2 sm:mb-3">Cast Your Vote</h2>
-                    {!roomState.revealed && (
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-emerald-400 rounded-full animate-pulse flex-shrink-0"></div>
-                        <p className="text-sm sm:text-base text-gray-400 min-w-0">
-                          {roomState.estimates.length} of {roomState.participants.length} participants voted
-                          {roomState.estimates.length === roomState.participants.length && ' - Ready to reveal!'}
-                        </p>
-                      </div>
-                    )}
-                    {roomState.revealed && (
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-blue-400 rounded-full flex-shrink-0"></div>
-                        <p className="text-sm sm:text-base text-gray-400">Results revealed - Ready for next round</p>
-                      </div>
-                    )}
+                    <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2 sm:mb-3">
+                      {roomState.revealed ? 'Voting Results' : 'Cast Your Vote'}
+                    </h2>
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${
+                        roomState.revealed ? 'bg-blue-400' : 'bg-emerald-400 animate-pulse'
+                      }`}></div>
+                      <p className="text-sm sm:text-base text-gray-400 min-w-0">
+                        {roomState.revealed 
+                          ? 'Results revealed - Ready for next round'
+                          : `${roomState.estimates.length} of ${roomState.participants.length} participants voted`
+                        }
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Control buttons with improved styling */}
-                  <div className="flex gap-2 sm:gap-3 flex-shrink-0">
+                  {/* Control buttons */}
+                  <div className="flex gap-3 flex-shrink-0">
                     {!roomState.revealed ? (
-                      <button
-                        onClick={actions.revealEstimates}
-                        disabled={roomState.estimates.length === 0}
-                        className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-medium rounded-lg sm:rounded-xl hover:from-emerald-700 hover:to-green-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 min-h-[44px] sm:min-h-[48px] disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-700 disabled:to-gray-700 shadow-lg touch-manipulation text-sm sm:text-base"
-                        aria-label="Reveal all estimates"
-                      >
-                        <Eye className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                        <span className="hidden sm:inline">
-                          {roomState.estimates.length === roomState.participants.length
-                            ? 'Reveal All'
-                            : `Reveal (${roomState.estimates.length})`}
-                        </span>
-                        <span className="sm:hidden">Reveal</span>
-                      </button>
-                    ) : (
-                      <div className="flex gap-2 sm:gap-3">
+                      <>
                         <button
-                          onClick={actions.resetEstimates}
-                          className="flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2.5 sm:py-3 bg-gray-800 text-white font-medium rounded-lg sm:rounded-xl hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 min-h-[44px] sm:min-h-[48px] border border-gray-700 touch-manipulation text-sm sm:text-base"
-                          aria-label="Reset estimates for new round with same story"
+                          onClick={actions.revealEstimates}
+                          disabled={!roomState.connected}
+                          className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-sm"
+                          aria-label="End voting and reveal all estimates"
                         >
-                          <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                          <span className="hidden sm:inline">Re-vote</span>
-                          <span className="sm:hidden">Re-vote</span>
+                          <Eye className="h-4 w-4 flex-shrink-0" />
+                          <span>End Voting ({roomState.estimates.length}/{roomState.participants.length})</span>
                         </button>
                         <button
                           onClick={actions.clearStoryAndReset}
-                          className="flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg sm:rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 min-h-[44px] sm:min-h-[48px] shadow-lg touch-manipulation text-sm sm:text-base"
+                          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 shadow-lg text-sm"
                           aria-label="Start estimation for a new story"
                         >
-                          <FileText className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                          <span className="hidden sm:inline">New Story</span>
-                          <span className="sm:hidden">Next</span>
+                          <FileText className="h-4 w-4 flex-shrink-0" />
+                          <span>New Story</span>
                         </button>
-                      </div>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={actions.resetEstimates}
+                          className="flex items-center gap-2 px-4 py-2.5 bg-gray-700 text-white font-medium rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 text-sm"
+                          aria-label="Reset estimates for new round with same story"
+                        >
+                          <RotateCcw className="h-4 w-4 flex-shrink-0" />
+                          <span>Re-vote</span>
+                        </button>
+                        <button
+                          onClick={actions.clearStoryAndReset}
+                          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 shadow-lg text-sm"
+                          aria-label="Start estimation for a new story"
+                        >
+                          <FileText className="h-4 w-4 flex-shrink-0" />
+                          <span>New Story</span>
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>

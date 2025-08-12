@@ -1,5 +1,5 @@
 'use client';
-// Removed ShakUI import
+import { Copy } from 'lucide-react';
 
 interface RoomCodeCopyProps {
   roomCode: string;
@@ -11,28 +11,32 @@ interface RoomCodeCopyProps {
 export function RoomCodeCopy({ roomCode, showLabel = true, className = '' }: RoomCodeCopyProps) {
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(roomCode);
+      const roomLink = `${window.location.origin}/room/${roomCode}`;
+      await navigator.clipboard.writeText(roomLink);
       // TODO: Add toast notification
-      console.log('Room code copied to clipboard');
+      console.log('Room link copied to clipboard');
     } catch (err) {
-      console.error('Failed to copy room code:', err);
+      console.error('Failed to copy room link:', err);
     }
   };
 
   return (
-    <div className={`flex items-center justify-center gap-3 ${className}`}>
-      {showLabel && (
-        <span className="text-sm text-gray-400 font-medium">Room Code:</span>
-      )}
-      <code className="bg-gray-800 border border-gray-600 px-4 py-2 rounded-lg font-mono text-lg text-cyan-400 font-bold tracking-wider">
-        {roomCode}
-      </code>
+    <div className={`space-y-3 ${className}`}>
+      <div className="text-center">
+        {showLabel && (
+          <span className="block text-xs text-gray-500 font-medium mb-2">Room Code</span>
+        )}
+        <code className="bg-gray-800 border border-gray-600 px-4 py-2 rounded-lg font-mono text-lg text-cyan-400 font-bold tracking-wider">
+          {roomCode}
+        </code>
+      </div>
       <button
         onClick={copyToClipboard}
-        className="px-3 py-2 text-sm text-gray-400 hover:text-cyan-400 hover:bg-gray-800 rounded-lg transition-colors"
-        title="Copy to clipboard"
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-600/10 text-cyan-400 border border-cyan-600/30 rounded-lg hover:bg-cyan-600/20 transition-all duration-200 text-sm font-medium"
+        title="Copy room link to share with others"
       >
-        Copy
+        <Copy className="h-4 w-4 flex-shrink-0" />
+        <span>Copy Room Link</span>
       </button>
     </div>
   );
