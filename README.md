@@ -19,3 +19,5 @@ Vercel-ready. Connect repository and add environment variables.
 ---
 
 MIT © ShakGPT
+
+Built by [Shakeel Bhamani](https://shak-tech.com) at [ShakTech Labs](https://shak-tech.com), a product engineering studio.
